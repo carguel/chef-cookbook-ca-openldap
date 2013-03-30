@@ -1,0 +1,8 @@
+dn: olcOverlay=ppolicy,olcDatabase={2}bdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: ppolicy
+olcPPolicyDefault: <%=node.ca_openldap.ppolicy_default_config_dn%>
+olcPPolicyHashCleartext: FALSE
+olcPPolicyUseLockout: FALSE
+olcPPolicyForwardUpdates: FALSE

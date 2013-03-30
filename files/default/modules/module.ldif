@@ -1,0 +1,3 @@
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
