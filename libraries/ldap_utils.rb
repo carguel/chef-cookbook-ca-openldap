@@ -2,8 +2,16 @@ require 'active_ldap'
 require 'net/ldap'
 
 module Chef::Recipe::LDAPHelpers
+
+  # Check that the :base key is presents in the options hash
   def check_base(opts)
     base = opts[:base] or raise ":base option shall be provided"
+  end
+
+  # Extract the index of an OLC entry.
+  def extract_index entry
+    m = entry.match /\{(\d+)\}/
+    m[1].to_i if m
   end
 end
 
@@ -23,6 +31,25 @@ class Chef::Recipe::LDAPUtils
     else
       Chef::Log.info("add ldap entry dn=#{dn}, attributes=#{attrs}")
       @ldap.add(dn: dn, attributes: attrs) or raise "Add LDAP entry failed, cause: #{@ldap.get_operation_result}"
+    end
+  end
+
+  # Add an entry in the directory or update an existing one
+  # @param [String] dn the dn of the entry to add
+  # @param [Hash] attrs the attributes of the entry
+  def add_or_update_entry(dn, attrs)
+    entries = @ldap.search(base: dn, scope: Net::LDAP::SearchScope_BaseObject, return_result: true)
+    raise "#{dn} does not match a single entry" if entries.size > 1
+
+    if entries.empty?
+      add_entry(dn, attrs)
+    else
+      entry = entries.first
+      ops = attrs.inject(Array.new) do |accum, (key, value)|
+        accum << [:replace, key, value] unless entry[key] == [value].flatten
+        accum
+      end
+      @ldap.modify(dn: dn, operations: ops)
     end
   end
 
@@ -78,6 +105,11 @@ class Chef::Recipe::LDAPConfigUtils
              else
                ""
              end
-    system("ldapsearch -Y EXTERNAL -H ldapi:// -b #{base} #{filter} | grep -q 'numEntries:'")
+    system("ldapsearch -Y EXTERNAL -H ldapi:// -b #{base} #{filter} | grep -q 'numEntries:'") 
+  end
+
+  # Get the absolute path of an LDIF schema file given the root of the LDIF config
+  def schema_path(ldif_config_dir, schema_name)
+    path = Dir["#{ldif_config_dir}/cn=config/cn=schema/*#{schema_name}.ldif"].first
   end
 end

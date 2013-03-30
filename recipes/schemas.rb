@@ -1,4 +1,3 @@
-
 schema_dir = "/etc/openldap/schema"
 ldif_dir = "/tmp/ldif_schemas"
 
@@ -20,7 +19,7 @@ end
 
 #import schemas into LDAP
 node.ca_openldap.additional_schemas.each do |schema_name|
-  ldap_schemas do
+  ldap_schema do
     ldif_dir ldif_dir
     schema schema_name
   end

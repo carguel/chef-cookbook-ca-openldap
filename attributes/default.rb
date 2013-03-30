@@ -19,7 +19,9 @@ default.ca_openldap.rootpassword = "pa$$word"
 # Default log level of the accesses to the bdb database
 default.ca_openldap.ldap_log_level = "-1"
 
-default.ca_openldap.acls = ["to attrs=userPassword by self =xw by anonymous auth by * none", "to * by self write by users read by * none"]
+# Default ACL
+default.ca_openldap.acls = ["to attrs=userPassword by self =xw by anonymous auth by * none", 
+                            "to * by self write by users read by * none"]
 
 # Default cookbook which defines the schemas to import
 # The cookbook shall store these schemas under files/default/schemas/
@@ -57,7 +59,41 @@ default.ca_openldap.dit = {
         attrs: {
           objectClass: %W[top organizationalUnit]
         }
+      },
+      "ou=policies" => {
+        attrs: {
+          objectClass: %W[top organizationalUnit]
+        }
       }
     }
   }
+}
+
+# Root directory of the openldap configuration
+default.ca_openldap.root_dir = "/etc/openldap"
+
+# Root directory of the slapd configuration
+default.ca_openldap.config_dir = "{node.ca_openldap.root_dir}/slapd.d"
+
+# DN of the default ppolicy configuration
+default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies,#{node.ca_openldap.basedn}"
+
+# Default ppolicy configuration (supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5))
+default.ca_openldap.ppolicy_default_config = {
+  pwdAllowUserChange: "TRUE",
+  pwdAttribute: "userPassword",
+  pwdCheckQuality: "0",
+  pwdMinAge: "0",
+  pwdMaxAge: "0",
+  pwdMinLength: "5",
+  pwdInHistory: "5",
+  pwdMaxFailure: "3",
+  pwdFailureCountInterval: "0",
+  pwdLockout: "TRUE",
+  pwdLockoutDuration: "0",
+  pwdAllowUserChange: "TRUE",
+  pwdExpireWarning: "0",
+  pwdGraceAuthNLimit: "0",
+  pwdMustChange: "FALSE",
+  pwdSafeModify: "TRUE"
 }
