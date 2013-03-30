@@ -14,6 +14,13 @@ service "slapd" do
   action [:enable, :stop]
 end
 
+directory node.ca_openldap.db_dir do
+  user "ldap"
+  group "ldap"
+  mode 0700
+  recursive true
+end
+
 # Configure the base DN, the root DN and its password
 ruby_block "set_basedn" do
   block do
@@ -22,6 +29,7 @@ ruby_block "set_basedn" do
     password = LDAPUtils.ssha_password(node.ca_openldap.rootpassword)
 
     f = Chef::Util::FileEdit.new(slapd_conf_file)
+    f.search_file_replace_line(/olcDbDirectory:/, "olcDbDirectory: #{node.ca_openldap.db_dir}")
     f.search_file_replace_line(/olcSuffix:/, "olcSuffix: #{node.ca_openldap.basedn}")
     f.search_file_replace_line(/olcRootDN:/, "olcRootDN: #{node.ca_openldap.rootdn}")
     f.search_file_delete_line(/olcRootPW:/)

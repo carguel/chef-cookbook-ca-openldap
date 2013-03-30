@@ -7,6 +7,8 @@ default.ca_openldap.ldap_server = "localhost"
 # Default openldap port
 default.ca_openldap.ldap_port = "389"
 
+default.ca_openldap.db_dir = "/var/lib/ldap"
+
 # Default rootDN
 default.ca_openldap.rootdn = "cn=Manager,#{node.ca_openldap.basedn}"
 
