@@ -19,7 +19,11 @@ class Chef::Recipe::LDAPUtils
   include Chef::Recipe::LDAPHelpers
 
   def initialize(server, port, dn, password)
-    @ldap = Net::LDAP.new(host: server, port: port, auth: {method: :simple, username: dn, password: password} )
+    args = {host: server, port: port, auth: {method: :simple, username: dn, password: password}}
+
+    args.merge!(encryption: {method: :simple_tls}) if port != 389
+    puts "ARGS = #{args}"
+    @ldap = Net::LDAP.new(args)
   end
 
   # Add an entry in the directory
@@ -39,9 +43,9 @@ class Chef::Recipe::LDAPUtils
   # @param [Hash] attrs the attributes of the entry
   def add_or_update_entry(dn, attrs)
     entries = @ldap.search(base: dn, scope: Net::LDAP::SearchScope_BaseObject, return_result: true)
-    raise "#{dn} does not match a single entry" if entries.size > 1
+    raise "#{dn} does not match a single entry" if entries && entries.size > 1
 
-    if entries.empty?
+    if entries.nil?
       add_entry(dn, attrs)
     else
       entry = entries.first

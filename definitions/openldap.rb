@@ -41,7 +41,7 @@ define :ldap_schema do
 
 
   # first update the LDIF schema according to http://www.zytrax.com/books/ldap/ch6/slapd-config.html#use-schemas
-  ruby_block "updated_ldif_schema" do
+  ruby_block "updated_ldif_schema_#{schema}" do
     block do
       ldif = ldap_config.schema_path(ldif_dir, schema)
 
@@ -56,7 +56,7 @@ define :ldap_schema do
   end
 
   # add the updated LDIF into the local LDAP instance
-  ruby_block "imported_schema" do
+  ruby_block "imported_schema_#{schema}" do
     block do
       ldif = ldap_config.schema_path(ldif_dir, schema)
       system "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config < #{ldif}"

@@ -14,10 +14,9 @@
 
 # TLS certificates (needed for GnuTLS)
 BASE  <%=node['ca_openldap']['basedn']%>
-URI   ldap://<%=node['ca_openldap']['server']%>
-<%case node[:platform]%>
-<%when "redhat"%>
-TLS_CACERTDIR     /etc/openssl/certs/
+<%if node.ca_openldap.tls.enable == :exclusive%>
+URI   ldaps://<%=node['ca_openldap']['server']%>
 <%else%>
-TLS_CACERT        /etc/ssl/certs/ca-certificates.crt
+URI   ldap://<%=node['ca_openldap']['server']%>
 <%end%>
+TLS_CACERTDIR     <%=node.ca_openldap.tls.cacert_path%>

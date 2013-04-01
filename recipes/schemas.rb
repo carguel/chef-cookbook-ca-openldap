@@ -19,7 +19,7 @@ end
 
 #import schemas into LDAP
 node.ca_openldap.additional_schemas.each do |schema_name|
-  ldap_schema do
+  ldap_schema "ldap_schema_#{schema_name}" do
     ldif_dir ldif_dir
     schema schema_name
   end

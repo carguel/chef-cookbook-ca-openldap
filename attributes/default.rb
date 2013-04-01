@@ -5,7 +5,7 @@ default.ca_openldap.basedn = "dc=example,dc=com"
 default.ca_openldap.ldap_server = "localhost"
 
 # Default openldap port
-default.ca_openldap.ldap_port = "389"
+default.ca_openldap.ldap_port = "636"
 
 default.ca_openldap.db_dir = "/var/lib/ldap"
 
@@ -73,7 +73,22 @@ default.ca_openldap.dit = {
 default.ca_openldap.root_dir = "/etc/openldap"
 
 # Root directory of the slapd configuration
-default.ca_openldap.config_dir = "{node.ca_openldap.root_dir}/slapd.d"
+default.ca_openldap.config_dir = "#{node.ca_openldap.root_dir}/slapd.d"
+
+# Enable TLS connections, possible values are
+# :no TLS access is not allowed
+# :yes both clear and TLS accesses are allowed
+# :exclusive only TLS access is allowed (ldap_port shall be correctly set)
+default.ca_openldap.tls.enable = :exclusive
+
+# Path of the directory which contains the TLS CA certificates
+default.ca_openldap.tls.cacert_path = "/etc/openldap/cacerts"
+
+# Path of the TLS certificate file
+default.ca_openldap.tls.cert_file = "/etc/openldap/certs/#{node.fqdn}.pem"
+
+# Path of the TLS key file
+default.ca_openldap.tls.key_file = "/etc/openldap/certs/#{node.fqdn}.key"
 
 # DN of the default ppolicy configuration
 default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies,#{node.ca_openldap.basedn}"
