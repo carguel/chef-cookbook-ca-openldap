@@ -7,7 +7,7 @@ end
 
 lu = LDAPUtils.new(node.ca_openldap.ldap_server, 
                    node.ca_openldap.ldap_port, 
-                   node.ca_openldap.rootdn, 
+                   build_rootdn(), 
                    node.ca_openldap.rootpassword)
 
 parse_populate_data_bag_item do |dn, attrs|

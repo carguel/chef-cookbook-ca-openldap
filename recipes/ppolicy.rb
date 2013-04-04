@@ -40,10 +40,8 @@ ruby_block "ppolicy_config" do
       sn: "PPolicy default config"
     }.merge(node.ca_openldap.ppolicy_default_config)
 
-    ldap.add_or_update_entry(node.ca_openldap.ppolicy_default_config_dn,
-                   attrs)
-    ldap.add_entry(node.ca_openldap.ppolicy_default_config_dn,
-                   attrs)
+    ppolicy_default_config_dn = [node.ca_openldap.ppolicy_default_config_dn, node.ca_openldap.basedn].join(",")
+    ldap.add_or_update_entry(ppolicy_default_config_dn, attrs)
   end
   action :create
 end

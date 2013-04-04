@@ -9,8 +9,8 @@ default.ca_openldap.ldap_port = "636"
 
 default.ca_openldap.db_dir = "/var/lib/ldap"
 
-# Default rootDN
-default.ca_openldap.rootdn = "cn=Manager,#{node.ca_openldap.basedn}"
+# Default rootDN (relative to the basedn)
+default.ca_openldap.rootdn = "cn=Manager"
 
 # Default rootPassword, will be stored in SSHA
 # It should be overriden by a role attribute
@@ -90,8 +90,8 @@ default.ca_openldap.tls.cert_file = "/etc/openldap/certs/#{node.fqdn}.pem"
 # Path of the TLS key file
 default.ca_openldap.tls.key_file = "/etc/openldap/certs/#{node.fqdn}.key"
 
-# DN of the default ppolicy configuration
-default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies,#{node.ca_openldap.basedn}"
+# DN of the default ppolicy configuration (relative to basedn)
+default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies"
 
 # Default ppolicy configuration (supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5))
 default.ca_openldap.ppolicy_default_config = {

@@ -61,6 +61,7 @@ ruby_block "tls_connection_configuration" do
 end
 
 # Configure the base DN, the root DN and its password
+my_root_dn = build_rootdn
 ruby_block "bdb_config" do
   block do
 
@@ -73,7 +74,7 @@ ruby_block "bdb_config" do
     f.search_file_replace_line(/olcSuffix:/, "olcSuffix: #{node.ca_openldap.basedn}")
 
     #configure root dn and root password
-    f.search_file_replace_line(/olcRootDN:/, "olcRootDN: #{node.ca_openldap.rootdn}")
+    f.search_file_replace_line(/olcRootDN:/, "olcRootDN: #{my_root_dn}")
     f.search_file_delete_line(/olcRootPW:/)
     f.insert_line_after_match(/olcRootDN:/, "olcRootPW: #{password}")
     

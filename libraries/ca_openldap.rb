@@ -1,5 +1,6 @@
 module Chef::Recipe::CAOpenldap
 
+  
   def parse_populate_data_bag_item
 
     config = data_bag_item('ca_openldap', 'populate')
@@ -18,6 +19,14 @@ module Chef::Recipe::CAOpenldap
 
       end
     end
+  end
 
+  # Build the rootdn.
+  # The rootdn attribute provides the rootdn relatively to the basedn.
+  # This helper method concatenates the rootdn attribute and the basedn
+  # to build the absolute rootdn.
+  # @return [String] the absolute rootdn.
+  def build_rootdn 
+    [node.ca_openldap.rootdn, node.ca_openldap.basedn].join(',')
   end
 end
