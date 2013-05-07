@@ -60,6 +60,28 @@ ruby_block "tls_connection_configuration" do
   end
 end
 
+if use_ldaps && node.ca_openldap.use_existing_certs_and_key
+  link node.ca_openldap.tls.cert_file do
+    to "/etc/pki/tls/certs/#{node['fqdn']}.pem"
+  end
+
+  file node.ca_openldap.tls.key_file do
+    owner "ldap"
+    group "ldap"
+    mode  0600
+    content File.read "/etc/pki/tls/private/#{node['fqdn']}.key"
+  end
+
+  ruby_block "ca_certificate_link" do
+    block do
+      ca_cert = "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt"
+      link_name = File.join(node.ca_openldap.tls.cacert_path, `openssl x509 -hash -noout -in #{ca_cert}` + ".0")
+      FileUtils.ln_s(ca_cert, link_name, force: true)
+    end
+    action :create
+  end
+end
+
 # Configure the base DN, the root DN and its password
 my_root_dn = build_rootdn
 ruby_block "bdb_config" do

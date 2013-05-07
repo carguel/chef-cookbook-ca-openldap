@@ -90,8 +90,17 @@ default.ca_openldap.tls.cert_file = "/etc/openldap/certs/#{node.fqdn}.pem"
 # Path of the TLS key file
 default.ca_openldap.tls.key_file = "/etc/openldap/certs/#{node.fqdn}.key"
 
+# Assume the CA certificate, the server certificate and its related key already exist under default directory (/etc/pki/tls for RHEL).
+# When this attribute is set to true, the following links are created:
+# * node.ca_openldap.tls.cert_file: points to the Server certificate (/etc/pki/tls/certs/<fqdn>.pem for RHEL)
+# * node.ca_openldap.tls.cacert_path + "/" + cacert_hash + ".0": points to the CA certificate chain (/etc/pki/tls/certs/<hostname>-bundle.crt for RHEL), cacert_hash is the X509 hash of the CA certificate file
+# Additionally the key file (/etc/pki/tls/private/<fqdn>.key) is copied to node.ca_openldap.tls.key_file.
+# This attribute is helpfull when certificates are deployed with the _certificate_ cookbook.
+default.ca_openldap.use_existing_certs_and_key = true
+
 # DN of the default ppolicy configuration (relative to basedn)
 default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies"
+
 
 # Default ppolicy configuration (supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5))
 default.ca_openldap.ppolicy_default_config = {
