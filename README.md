@@ -20,7 +20,7 @@ Debian and Ubuntu are planned but currently not supported.
 
 ### Cookbooks:
 
-* [certificate](http://community.opscode.com/cookbooks/certificate) (optional): supports the certificates and the related key file deployed with this cookbook.
+* [certificate](http://community.opscode.com/cookbooks/certificate) (optional): ca\_openldap supports the certificates and the related key file deployed with this cookbook.
 
 ## Attributes
 
@@ -101,28 +101,28 @@ Example of `ca_openldap/dit` data bag item:
 
 ```json
     {
-        "id": "dit",
-        "dit": {
-            "dc=example,dc=fr": {
-                "attrs": {
-                    "objectClass": ["organization", "dcObject"],
-                    "description": "root of the directory",
-                    "o": "organization"
-                },
-                "children": {
-                    "ou=groups": {
-                        "attrs": {
-                            "objectClass": ["top", "organizationalUnit"]
-                        }
-                    },
-                    "ou=users": {
-                        "attrs": {
-                            "objectClass": ["top", "organizationalUnit"]
-                        }
-                    }
-                }
+      "id": "dit",
+      "dit": {
+        "dc=example,dc=fr": {
+          "attrs": {
+            "objectClass": ["organization", "dcObject"],
+            "description": "root of the directory",
+            "o": "organization"
+          },
+          "children": {
+            "ou=groups": {
+              "attrs": {
+                "objectClass": ["top", "organizationalUnit"]
+              }
+            },
+            "ou=users": {
+              "attrs": {
+                "objectClass": ["top", "organizationalUnit"]
+              }
             }
+          }
         }
+      }
     }
 ```
 
@@ -131,7 +131,9 @@ Example of `ca_openldap/dit` data bag item:
 
 Install additional schemas provided as a file distribution (from another cookbook for example).
 
-The schema file must comply with the standard schema format (see as an example official schemas stored under /etc/openldap/schemas).
+See the schema attributes above to configure this recipe.
+
+Each provided schema file must comply with the standard schema format (have a look to the official schemas stored under /etc/openldap/schemas).
 
 ### populate
 
