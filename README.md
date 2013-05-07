@@ -220,7 +220,7 @@ The x509 hash can be easily generated with the following command:
 
 If `node.ca_openldap.use_existing_certs_and_key` is set to true, 
 the recipe assumes that the server and CA certificates 
-are deployed by the _certificate_ cookbook under the default locations.
+were previously deployed by the _certificate_ cookbook under the default locations.
 Consequently, the recipe creates two links which point to the server and CA certificates:
 * the server certificate link is created under the `node.ca_openldap.tls.cert_file` location,
 * the CA certification link is created in the `node.ca_openldap.tls.cacert_path` directory, with the proper name as explaine above.  
