@@ -31,9 +31,6 @@ default.ca_openldap.schema_cookbook = nil
 # Default additional schemas to import
 default.ca_openldap.additional_schemas = []
 
-# Default classes for users
-default.ca_openldap.user_classes = %W[top inetOrgPerson posixAccount]
-
 # Default DIT to create in the directory.
 # This attribute can be overriden by the 'ca_openldap/dit' data bag item.
 # If this data bag item exists, the DIT is searched under the "dit" hash key.
