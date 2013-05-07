@@ -37,19 +37,7 @@ if node.ca_openldap.tls.enable != :no
 end
 
 # TLS connection configuration
-case node.ca_openldap.tls.enable
-when :no
-  use_ldap = "yes"
-  use_ldaps = "no"
-when :yes
-  use_ldap = "yes"
-  use_ldaps = "yes"
-when :exclusive
-  use_ldap = "no"
-  use_ldaps = "yes"
-else
-  raise "unsupported value #{node.ca_openldap.tls.enable} for TLS configuration"
-end
+(use_ldap, use_ldaps) = use_ldap_or_ldaps?(node.ca_openldap.tls.enable)
 
 ruby_block "tls_connection_configuration" do
   block do
@@ -60,7 +48,7 @@ ruby_block "tls_connection_configuration" do
   end
 end
 
-if use_ldaps && node.ca_openldap.use_existing_certs_and_key
+if (use_ldaps == "yes") && node.ca_openldap.use_existing_certs_and_key
   link node.ca_openldap.tls.cert_file do
     to "/etc/pki/tls/certs/#{node['fqdn']}.pem"
   end
@@ -72,14 +60,7 @@ if use_ldaps && node.ca_openldap.use_existing_certs_and_key
     content File.read "/etc/pki/tls/private/#{node['fqdn']}.key"
   end
 
-  ruby_block "ca_certificate_link" do
-    block do
-      ca_cert = "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt"
-      link_name = File.join(node.ca_openldap.tls.cacert_path, `openssl x509 -hash -noout -in #{ca_cert}` + ".0")
-      FileUtils.ln_s(ca_cert, link_name, force: true)
-    end
-    action :create
-  end
+  ca_certificate_link
 end
 
 # Configure the base DN, the root DN and its password

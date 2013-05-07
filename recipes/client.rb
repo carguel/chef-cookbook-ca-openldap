@@ -16,3 +16,7 @@ template ldap_conf do
   group "root"
   source "ldap.conf.erb"
 end
+
+ca_certificate_link do
+  action :create
+end

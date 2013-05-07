@@ -124,3 +124,27 @@ define :openldap_module do
     not_if {ldap_config.contains?(base: "cn=module{0},cn=config", filter: "olcModuleLoad=#{name}.la")}
   end
 end
+
+# Create a link under node.ca_openldap.tls.cacert_path which points to the CA Certificate under 
+# "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt".
+#
+# The name of the created link is the X.509 hash with the extension ".0" in order to comply with what it is
+# expected by OpenLDAP.
+# This definition does not need any parameters.
+define :ca_certificate_link do
+
+  directory node.ca_openldap.tls.cacert_path do
+    mode 0700
+    owner "ldap"
+    group "ldap"
+  end
+
+  ruby_block "ca_certificate_link" do
+    block do
+      ca_cert = "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt"
+      link_name = File.join(node.ca_openldap.tls.cacert_path, `openssl x509 -hash -noout -in #{ca_cert}` + ".0")
+      FileUtils.ln_s(ca_cert, link_name, force: true)
+    end
+    action :create
+  end
+end
