@@ -68,18 +68,17 @@ ruby_block "tls_connection_configuration" do
 end
 
 if (use_ldaps == "yes") && node.ca_openldap.use_existing_certs_and_key
-  link node.ca_openldap.tls.cert_file do
-    to "/etc/pki/tls/certs/#{node['fqdn']}.pem"
+  server_certificate_link do
+    action :create
   end
 
-  file node.ca_openldap.tls.key_file do
-    owner "ldap"
-    group "ldap"
-    mode  0600
-    content File.read "/etc/pki/tls/private/#{node['fqdn']}.key"
+  private_key_link do
+    action :create
   end
-
-  ca_certificate_link
+  
+  ca_certificate_link do
+    action :create
+  end
 end
 
 # Configure the base DN, the root DN and its password

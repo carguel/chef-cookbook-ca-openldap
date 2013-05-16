@@ -144,12 +144,23 @@ define :openldap_module do
   end
 end
 
+# Create a link under node.ca_openldap.tls.cert_file which points to the server certificate under
+# "/etc/pki/tls/certs/#{node['fqdn']}.pem".
+#
+# This is only a wrapper over the link resource for semantic purpose.
+# This definition does not depend on any attribute.
+define :server_certificate_link do
+  link node.ca_openldap.tls.cert_file do
+    to "/etc/pki/tls/certs/#{node['fqdn']}.pem"
+  end
+end
+
 # Create a link under node.ca_openldap.tls.cacert_path which points to the CA Certificate under 
 # "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt".
 #
 # The name of the created link is the X.509 hash with the extension ".0" in order to comply with what it is
 # expected by OpenLDAP.
-# This definition does not need any parameters.
+# This definition does not depend on any attribute.
 define :ca_certificate_link do
 
   directory node.ca_openldap.tls.cacert_path do
@@ -161,9 +172,29 @@ define :ca_certificate_link do
   ruby_block "ca_certificate_link" do
     block do
       ca_cert = "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt"
-      link_name = File.join(node.ca_openldap.tls.cacert_path, `openssl x509 -hash -noout -in #{ca_cert}` + ".0")
+      link_name = File.join(node.ca_openldap.tls.cacert_path, `openssl x509 -hash -noout -in #{ca_cert}`.chomp + ".0")
       FileUtils.ln_s(ca_cert, link_name, force: true)
     end
     action :create
+  end
+end
+
+# Create a link under node.ca_openldap.tls.key_file which points to the private key file under
+# "/etc/pki/private/#{node['fqdn']}.key.
+#
+# This definition does not depend on any attribute.
+define :private_key_link do
+
+  # We create a hardlink in order to be able 
+  # to set a different owner, group and mode
+  link node.ca_openldap.tls.key_file do
+    to "/etc/pki/tls/private/#{node['fqdn']}.key"
+    link_type :hard
+  end
+
+  file node.ca_openldap.tls.key_file do
+    owner "ldap"
+    group "ldap"
+    mode  0600
   end
 end
