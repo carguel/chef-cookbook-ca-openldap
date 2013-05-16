@@ -17,13 +17,19 @@
 # limitations under the License.
 #
 
+class Chef::Recipe
+    include CAOpenldap
+end
+
 #configure module
 openldap_module "ppolicy" do
   action :run
 end
 
+my_root_dn = build_rootdn()
 ldap_config = Chef::Recipe::LDAPConfigUtils.new
-ldap = Chef::Recipe::LDAPUtils.new(node.ca_openldap.ldap_server, node.ca_openldap.ldap_port, node.ca_openldap.rootdn, node.ca_openldap.rootpassword)
+ldap = Chef::Recipe::LDAPUtils.new(node.ca_openldap.ldap_server, node.ca_openldap.ldap_port, my_root_dn, node.ca_openldap.rootpassword)
+
 
 tmp_ppolicy_overlay_ldif = "/tmp/ppolicy_overlay.ldif"
 
