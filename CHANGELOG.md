@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.2.1:
+
+* Fix #2: Compile Error in server recipe on file resource node.ca_openldap.tls.key_file
+* Fix #1: Wrong rootdn used for the ppolicy configuration creation
+
 ## 0.2.0:
 
 * Add TLS support based on the certificates and the related key file 
