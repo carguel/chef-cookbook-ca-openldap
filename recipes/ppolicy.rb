@@ -60,7 +60,7 @@ end
 ruby_block "ppolicy_config" do
   block do
     attrs = {
-      objectClass: ["pwdPolicy", "person", "top"],
+      objectClass: ["pwdPolicy", "person", "top", "pwdPolicyChecker"],
       sn: "PPolicy default config"
     }.merge(node.ca_openldap.ppolicy_default_config)
 
