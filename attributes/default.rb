@@ -23,8 +23,14 @@ default.ca_openldap.basedn = "dc=example,dc=com"
 # Default openldap server
 default.ca_openldap.ldap_server = "localhost"
 
-# Default openldap port
-default.ca_openldap.ldap_port = "636"
+
+# Openldap listening port (those attributes configure the slapd listening ports)
+default.ca_openldap.default_ports.ldap = "389"
+default.ca_openldap.default_ports.ldaps = "636"
+
+# Openldap port to connect to for DIT creation and populate
+# If only ldaps is enable, this attribute must be overriden accordingly
+default.ca_openldap.ldap_port = node.ca_openldap.default_ports.ldap
 
 default.ca_openldap.db_dir = "/var/lib/ldap"
 
@@ -94,7 +100,7 @@ default.ca_openldap.config_dir = "#{node.ca_openldap.root_dir}/slapd.d"
 # Enable TLS connections, possible values are
 # :no TLS access is not allowed
 # :yes both clear and TLS accesses are allowed
-# :exclusive only TLS access is allowed (ldap_port shall be correctly set)
+# :exclusive only TLS access is allowed 
 default.ca_openldap.tls.enable = :exclusive
 
 # Path of the directory which contains the TLS CA certificates
@@ -137,3 +143,6 @@ default.ca_openldap.ppolicy_default_config = {
   pwdMustChange: "FALSE",
   pwdSafeModify: "TRUE"
 }
+
+# ppolicy overlay parameters
+default.ca_openldap.ppolicy.hash_clear_text = 'FALSE'

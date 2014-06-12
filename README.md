@@ -28,7 +28,9 @@ Debian and Ubuntu are planned but currently not supported.
 
 * `node.ca_openldap.basedn` - base DN of the directory (default: `"dc=example,dc=com"`).
 * `node.ca_openldap.ldap_server` - IP or hostname of the node which hosts the ldap server (default: `"localhost"`).
-* `node.ca_openldap.ldap_port` - TC port of the ldap server (default: `636`).
+* `node.ca_openldap.default_ports.ldap` - Default LDAP port
+* `node.ca_openldap.ldap_port` - port to connect to the LDAP server (used by the following recipes: client, dit, populate, ppolicy), must be consistent with ca\_openldap.default\_ports.
+
 
 ### Server attributes
 
@@ -37,6 +39,8 @@ Debian and Ubuntu are planned but currently not supported.
 * `node.ca_openldap.rootpassword` - Root Password, it is strongly recommended to modify the default value (default: `"pa$$word"`) 
 * `node.ca_openldap.ldap_log_level` - Log level - see [Slapd config] (http://www.openldap.org/doc/admin24/slapdconfig.html) for explanation of supported values (default: `"-1"`)
 * `node.ca_openldap.acls` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
+* `node.ca_openldap.default_ports.ldap` - Port of the 'clear' LDAP socket, used only when ca\_openldap.tls.enable is to `:no` or `:yes`
+* `node.ca_openldap.defaut_ports.ldaps` - Port of the TLS socket, used only when ca\_openldap.tls.enable is set to `:yes` or `:exclusive`
 * `node.ca_openldap.tls.enable` - Configure the TLS access support, accepted values are (default `:exclusive`): 
     * `:no` TLS access is not allowed
     * `:yes` both clear and TLS accesses are allowed

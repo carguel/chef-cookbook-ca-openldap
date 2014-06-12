@@ -164,7 +164,7 @@ end
 define :ca_certificate_link do
 
   directory node.ca_openldap.tls.cacert_path do
-    mode 0700
+    mode 0755
     owner "ldap"
     group "ldap"
   end

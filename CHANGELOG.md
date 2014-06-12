@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.2.2:
+* Manage configuration of default listening ports
+* Add a recipe to install and configure ppolicy overlay
+* Define Apache 2.0 as the license of this cookbook
+
 ## 0.2.1:
 
 * Fix #2: Compile Error in server recipe on file resource node.ca_openldap.tls.key_file
