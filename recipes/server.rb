@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe 'ca_openldap::default'
+
 class Chef::Recipe
   include CAOpenldap
 end
@@ -41,7 +43,7 @@ directory node.ca_openldap.db_dir do
 end
 
 # TLS certificate and key path configuration
-if node.ca_openldap.tls.enable != :no
+if node.ca_openldap.tls.enable.to_sym != :no
   ruby_block "tls_path_configuration" do
     block do
 
@@ -56,7 +58,7 @@ if node.ca_openldap.tls.enable != :no
 end
 
 # TLS connection configuration
-(use_ldap, use_ldaps) = use_ldap_or_ldaps?(node.ca_openldap.tls.enable)
+(use_ldap, use_ldaps) = use_ldap_or_ldaps?(node.ca_openldap.tls.enable.to_sym)
 ldap_port = node.ca_openldap.default_ports.ldap
 ldaps_port = node.ca_openldap.default_ports.ldaps
 

@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe 'ca_openldap::default'
+
 schema_dir = "/etc/openldap/schema"
 ldif_dir = "/tmp/ldif_schemas"
 

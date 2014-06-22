@@ -17,9 +17,6 @@
 # limitations under the License.
 #
 
-require 'active_ldap'
-require 'net/ldap'
-
 module Chef::Recipe::LDAPHelpers
 
   # Check that the :base key is presents in the options hash
@@ -114,7 +111,7 @@ class Chef::Recipe::LDAPUtils
   # @param [String] password the password to hash
   # @return [String] the hashed password
   def self.ssha_password(clear_password)
-    ActiveLdap::UserPassword.ssha clear_password
+    SSHA.hash_password(clear_password).gsub(/^.+\*/, "")
   end
 end
 

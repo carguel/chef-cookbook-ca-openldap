@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe 'ca_openldap::default'
+
 class Chef::Recipe
   include CAOpenldap
 end
@@ -25,9 +27,11 @@ package "openldap-clients" do
   action :upgrade
 end
 
-ldap_conf = case node[:platform]
-when "redhat"
+ldap_conf = case node[:platform_family]
+when "rhel"
   "/etc/openldap/ldap.conf"
+else
+  Chef::Application.fatal!("Platform not supported")
 end
 
 template ldap_conf do

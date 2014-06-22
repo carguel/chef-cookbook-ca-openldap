@@ -2,6 +2,11 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.2.3
+* Replace gem dependency to activeldap by ssha.
+* Allow installation of net-ldap and ssh gems providing path of local gems.
+* Force conversion to symbol of node['ca_openldap']['tls']['enable'] value.
+
 ## 0.2.2:
 * Manage configuration of default listening ports
 * Add a recipe to install and configure ppolicy overlay
