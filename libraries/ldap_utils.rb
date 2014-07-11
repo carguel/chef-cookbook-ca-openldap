@@ -38,7 +38,6 @@ class Chef::Recipe::LDAPUtils
     args = {host: server, port: port, auth: {method: :simple, username: dn, password: password}}
 
     args.merge!(encryption: {method: :simple_tls}) if port != 389
-    puts "ARGS = #{args}"
     @ldap = Net::LDAP.new(args)
   end
 
@@ -69,7 +68,7 @@ class Chef::Recipe::LDAPUtils
         accum << [:replace, key, value] unless entry[key] == [value].flatten
         accum
       end
-      @ldap.modify(dn: dn, operations: ops)
+      @ldap.modify(dn: dn, operations: ops) or raise "Update LDAP entry failed, cause: #{@ldap.get_operation_result}"
     end
   end
 
