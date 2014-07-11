@@ -46,7 +46,7 @@ class Chef::Recipe::LDAPUtils
   # @param [Hash] attrs the attributes of the entry
   def add_entry(dn, attrs)
     if exists?(dn)
-      Chef::Log.info("dn=#{dn} already exists")
+      Chef::Log.info("ldap entry dn=#{dn} already exists => not added")
     else
       Chef::Log.info("add ldap entry dn=#{dn}, attributes=#{attrs}")
       @ldap.add(dn: dn, attributes: attrs) or raise "Add LDAP entry failed, cause: #{@ldap.get_operation_result}"
@@ -68,6 +68,7 @@ class Chef::Recipe::LDAPUtils
         accum << [:replace, key, value] unless entry[key] == [value].flatten
         accum
       end
+      Chef::Log.info("update ldap entry dn=#{dn}, attributes=#{attrs}")
       @ldap.modify(dn: dn, operations: ops) or raise "Update LDAP entry failed, cause: #{@ldap.get_operation_result}"
     end
   end
