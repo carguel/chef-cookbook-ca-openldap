@@ -59,7 +59,7 @@ module Chef::Recipe::CAOpenldap
   # indicates if TLS connections (LDAPS) are supported.
   # @raise [Exception] tls_mode value is not supported.
   def use_ldap_or_ldaps?(tls_mode)
-    case tls_mode
+    case tls_mode.to_sym
     when :no
       ["yes", "no"]
     when :yes
@@ -69,5 +69,18 @@ module Chef::Recipe::CAOpenldap
     else
       raise "unsupported value #{tls_mode} for TLS configuration"
     end
+  end
+
+  # Determine if TLS connexion are enable.
+  # @param tls_mod the TLS mode, the following values are supported
+  #   * :no - TLS connections are not supported, only clear connections are supported
+  #   * :yes- TLS and clear connections are supported
+  #   * :exclusive - only TLS connections are supported
+  # @return [Boolean.true | Boolean.false] true if TLS mode is enable false ortherwise.
+  #   
+  #    
+  def tls_enable?(tls_mode)
+    result = use_ldap_or_ldaps? tls_mode
+    result.last == "yes"
   end
 end

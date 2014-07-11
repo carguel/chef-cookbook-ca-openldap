@@ -34,10 +34,10 @@ end
 class Chef::Recipe::LDAPUtils
   include Chef::Recipe::LDAPHelpers
 
-  def initialize(server, port, dn, password)
-    args = {host: server, port: port, auth: {method: :simple, username: dn, password: password}}
+  def initialize(server, port, dn, password, tls_enable)
+    args = {host: server, port: port.to_i, auth: {method: :simple, username: dn, password: password}}
 
-    args.merge!(encryption: {method: :simple_tls}) if port != 389
+    args.merge!(encryption: {method: :simple_tls}) if tls_enable
     @ldap = Net::LDAP.new(args)
   end
 
