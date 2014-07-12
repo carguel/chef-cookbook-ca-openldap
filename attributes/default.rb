@@ -91,6 +91,10 @@ default.ca_openldap.dit = {
   }
 }
 
+# When update mode is enable, populate recipe performs an add or update entry
+# rather than a simple add
+default.ca_openldap.populate.update_enable = false
+
 # Root directory of the openldap configuration
 default.ca_openldap.root_dir = "/etc/openldap"
 

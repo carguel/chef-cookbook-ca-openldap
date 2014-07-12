@@ -34,11 +34,10 @@ end
 class Chef::Recipe::LDAPUtils
   include Chef::Recipe::LDAPHelpers
 
-  def initialize(server, port, dn, password)
-    args = {host: server, port: port, auth: {method: :simple, username: dn, password: password}}
+  def initialize(server, port, dn, password, tls_enable)
+    args = {host: server, port: port.to_i, auth: {method: :simple, username: dn, password: password}}
 
-    args.merge!(encryption: {method: :simple_tls}) if port != 389
-    puts "ARGS = #{args}"
+    args.merge!(encryption: {method: :simple_tls}) if tls_enable
     @ldap = Net::LDAP.new(args)
   end
 
@@ -47,7 +46,7 @@ class Chef::Recipe::LDAPUtils
   # @param [Hash] attrs the attributes of the entry
   def add_entry(dn, attrs)
     if exists?(dn)
-      Chef::Log.info("dn=#{dn} already exists")
+      Chef::Log.info("ldap entry dn=#{dn} already exists => not added")
     else
       Chef::Log.info("add ldap entry dn=#{dn}, attributes=#{attrs}")
       @ldap.add(dn: dn, attributes: attrs) or raise "Add LDAP entry failed, cause: #{@ldap.get_operation_result}"
@@ -69,7 +68,8 @@ class Chef::Recipe::LDAPUtils
         accum << [:replace, key, value] unless entry[key] == [value].flatten
         accum
       end
-      @ldap.modify(dn: dn, operations: ops)
+      Chef::Log.info("update ldap entry dn=#{dn}, attributes=#{attrs}")
+      @ldap.modify(dn: dn, operations: ops) or raise "Update LDAP entry failed, cause: #{@ldap.get_operation_result}"
     end
   end
 

@@ -66,6 +66,8 @@ Additionally the key file (/etc/pki/tls/private/\<_fqdn_\>.key) is copied to `no
 ### DIT attributes
 * `node.ca_openldap.dit` - JSON structure which defines the DIT, this attribute can be overriden by the `ca_openldap/dit` data bag item, see `dit` recipe for additional information.
 
+### Populate attributes
+* `node.ca_openldap.populate.update_enable` - when true, populate recipes performs an add or update entry rather than a simple add.
 
 ## Recipes
 

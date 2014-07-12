@@ -30,7 +30,7 @@ end
 
 my_root_dn = build_rootdn()
 ldap_config = Chef::Recipe::LDAPConfigUtils.new
-ldap = Chef::Recipe::LDAPUtils.new(node.ca_openldap.ldap_server, node.ca_openldap.ldap_port, my_root_dn, node.ca_openldap.rootpassword)
+ldap = Chef::Recipe::LDAPUtils.new(node.ca_openldap.ldap_server, node.ca_openldap.ldap_port, my_root_dn, node.ca_openldap.rootpassword, tls_enable?(node.ca_openldap.tls.enable) )
 
 
 tmp_ppolicy_overlay_ldif = "/tmp/ppolicy_overlay.ldif"

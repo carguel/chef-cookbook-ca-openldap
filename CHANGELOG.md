@@ -2,6 +2,13 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.3
+* Raise an exception when entry update fails (#6)
+* Fix error when creating DIT if TLS mode is not enable (#7)
+* Add support for update mode in populate recipe (#8)
+* Fix wrong URI in ldap.conf file (#9)
+* Fix error in ppolicy recipe when TLS is not enable (#7)
+
 ## 0.2.3
 * Replace gem dependency to activeldap by ssha.
 * Allow installation of net-ldap and ssh gems providing path of local gems.

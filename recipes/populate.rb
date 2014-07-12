@@ -24,7 +24,11 @@ end
 lu = LDAPUtils.new(node.ca_openldap.ldap_server, 
                    node.ca_openldap.ldap_port, 
                    build_rootdn(), 
-                   node.ca_openldap.rootpassword)
+                   node.ca_openldap.rootpassword,
+                   tls_enable?(node.ca_openldap.tls.enable)
+                  )
+
+update_enable = node.ca_openldap.populate.update_enable
 
 parse_populate_data_bag_item do |dn, attrs|
   ruby_block "add_entry_#{dn}" do
@@ -36,8 +40,11 @@ parse_populate_data_bag_item do |dn, attrs|
         attrs["userPassword"] = LDAPUtils.ssha_password password
       end
 
-      Chef::Log.info "add entry dn=#{dn}, attrs=#{attrs}"
-      lu.add_entry(dn, attrs)
+      if update_enable
+        lu.add_or_update_entry(dn, attrs)
+      else
+        lu.add_entry(dn, attrs)
+      end
     end
   end
 end

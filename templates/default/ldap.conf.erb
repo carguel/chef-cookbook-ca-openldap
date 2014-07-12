@@ -15,8 +15,8 @@
 # TLS certificates (needed for GnuTLS)
 BASE  <%=node['ca_openldap']['basedn']%>
 <%if node.ca_openldap.tls.enable == :exclusive%>
-URI   ldaps://<%=node['ca_openldap']['server']%>:<%=node['ca_openldap']['ldap_port']%>
+URI   ldaps://<%=node['ca_openldap']['ldap_server']%>:<%=node['ca_openldap']['ldap_port']%>
 <%else%>
-URI   ldap://<%=node['ca_openldap']['server']%>:<%=node['ca_openldap']['ldap_port']%>
+URI   ldap://<%=node['ca_openldap']['ldap_server']%>:<%=node['ca_openldap']['ldap_port']%>
 <%end%>
 TLS_CACERTDIR     <%=node.ca_openldap.tls.cacert_path%>
