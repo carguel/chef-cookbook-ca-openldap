@@ -1,18 +1,29 @@
 ---
 driver:
   name: vagrant
+  require_chef_omnibus: true
+  customize:
+    memory: 1024
+
 
 provisioner:
   name: chef_solo
 
 platforms:
   - name: centos-6.5
+    driver:
+      box: opscode-centos-6.5
 
 suites:
   - name: default
     run_list:
       - recipe[ca_openldap::server]
+      - recipe[ca_openldap::dit]
+      - recipe[ca_openldap::populate]
+      - recipe[ca_openldap::ppolicy]
     attributes:
       ca_openldap:
+        populate:
+            update_enable: true
         tls:
-          enable: "no"
+            enable: "no"

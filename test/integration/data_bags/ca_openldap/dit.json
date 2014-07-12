@@ -1,0 +1,24 @@
+{
+  "id": "dit",
+  "dit": {
+    "dc=example,dc=com": {
+      "attrs": {
+        "objectClass": ["organization", "dcObject"],
+        "description": "root of the directory",
+        "o": "organization"
+      },
+      "children": {
+        "ou=groups": {
+          "attrs": {
+            "objectClass": ["top", "organizationalUnit"]
+          }
+        },
+        "ou=users": {
+          "attrs": {
+            "objectClass": ["top", "organizationalUnit"]
+          }
+        }
+      }
+    }
+  }
+}
