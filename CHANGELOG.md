@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.4.1
+* Stringify and convert in lowercase attribute names for the evaluation
+  of attributes to ignore.
+
 ## 0.4
 * Support a list of attributes not to update in populate recipe (#7)
 
