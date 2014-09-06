@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.4
+* Support a list of attributes not to update in populate recipe (#7)
+
 ## 0.3
 * Raise an exception when entry update fails (#6)
 * Fix error when creating DIT if TLS mode is not enable (#7)
