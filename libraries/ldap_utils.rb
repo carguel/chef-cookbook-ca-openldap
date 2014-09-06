@@ -131,7 +131,9 @@ class Chef::Recipe::LDAPUtils
   # @param [Array<#to_s>] attributes_to_ignore List of attributes to ignore.
   # @return [true|false] true if the attribute is includes in the list of attributes to ignore.
   def ignored_attribute?(attribute, attributes_to_ignore)
-    attributes_to_ignore.map(&:to_s).include?(attribute.to_s)
+    attributes_to_ignore.map do |attribute_to_ignore|
+      attribute_to_ignore.to_s.downcase
+    end.include?(attribute.to_s.downcase)
   end
 end
 

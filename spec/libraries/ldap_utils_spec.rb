@@ -107,8 +107,10 @@ class Chef::Recipe
               {}.merge(updated_attrs).merge(description: 'modified_description')
             end
 
-            it "does not update the ignored attributes" do
-              subject.add_or_update_entry(dn_to_add, other_updated_attrs, :description)
+            ['description', 'DESCRIPTION', :description].each do |attribute_name|
+              it "does not update the ignored attribute (#{attribute_name.inspect})" do
+                subject.add_or_update_entry(dn_to_add, other_updated_attrs, attribute_name)
+              end
             end
           end
         end
