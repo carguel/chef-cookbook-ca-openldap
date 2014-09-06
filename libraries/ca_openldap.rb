@@ -30,7 +30,7 @@ module Chef::Recipe::CAOpenldap
       default_classes = branch['default_classes']
       branch['entries'].each do |entry|
         dn = Chef::Recipe::LDAPUtils.build_dn(entry['dn'], branch_dn)
-        attrs = entry.merge(Chef::Recipe::LDAPUtils.first_item(dn))
+        attrs = entry
         attrs.delete('dn')
         attrs["objectClass"] = default_classes
 
