@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.4.2
+* Fix unwanted attribute when creating an entry (#12)
+* Fix wrong management of ['ca_openldap']['populate']['attributes_to_ignore'] (#11)
+
 ## 0.4.1
 * Stringify and convert in lowercase attribute names for the evaluation
   of attributes to ignore.
