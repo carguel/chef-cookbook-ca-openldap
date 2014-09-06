@@ -56,7 +56,7 @@ class Chef::Recipe::LDAPUtils
   # Add an entry in the directory or update an existing one
   # @param [String] dn the dn of the entry to add
   # @param [Hash] attrs the attributes of the entry
-  def add_or_update_entry(dn, attrs)
+  def add_or_update_entry(dn, attrs, *attributes_to_ignore)
     entries = @ldap.search(base: dn, scope: Net::LDAP::SearchScope_BaseObject, return_result: true)
     raise "#{dn} does not match a single entry" if entries && entries.size > 1
 
@@ -65,11 +65,17 @@ class Chef::Recipe::LDAPUtils
     else
       entry = entries.first
       ops = attrs.inject(Array.new) do |accum, (key, value)|
-        accum << [:replace, key, value] unless entry[key] == [value].flatten
+        if Array(entry[key]) != Array(value) && ! ignored_attribute?(key, attributes_to_ignore)
+          accum << [:replace, key, value] 
+        end
         accum
       end
-      Chef::Log.info("update ldap entry dn=#{dn}, attributes=#{attrs}")
-      @ldap.modify(dn: dn, operations: ops) or raise "Update LDAP entry failed, cause: #{@ldap.get_operation_result}"
+
+
+      if not ops.empty?
+        Chef::Log.info("update ldap entry dn=#{dn}, attributes=#{attrs}")
+        @ldap.modify(dn: dn, operations: ops) or raise "Update LDAP entry failed, cause: #{@ldap.get_operation_result}"
+      end
     end
   end
 
@@ -112,6 +118,20 @@ class Chef::Recipe::LDAPUtils
   # @return [String] the hashed password
   def self.ssha_password(clear_password)
     SSHA.hash_password(clear_password).gsub(/^.+\*/, "")
+  end
+
+  private
+
+  # Test if an attribute must be ignored.
+  #
+  # The equality is based on the lowercase stringified form og the attribute and the
+  # elements of the list.
+  #
+  # @param [#to_s] attribute Attribute name.
+  # @param [Array<#to_s>] attributes_to_ignore List of attributes to ignore.
+  # @return [true|false] true if the attribute is includes in the list of attributes to ignore.
+  def ignored_attribute?(attribute, attributes_to_ignore)
+    attributes_to_ignore.map(&:to_s).include?(attribute.to_s)
   end
 end
 

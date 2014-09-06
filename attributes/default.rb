@@ -95,6 +95,10 @@ default.ca_openldap.dit = {
 # rather than a simple add
 default.ca_openldap.populate.update_enable = false
 
+# List of attributes that must not be updated when update mode
+# is enabled.
+default.ca_openldap.populate.attributes_to_ignore = []
+
 # Root directory of the openldap configuration
 default.ca_openldap.root_dir = "/etc/openldap"
 

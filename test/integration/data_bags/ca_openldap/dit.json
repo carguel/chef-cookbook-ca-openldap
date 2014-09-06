@@ -17,6 +17,11 @@
           "attrs": {
             "objectClass": ["top", "organizationalUnit"]
           }
+        },
+        "ou=policies": {
+          "attrs": {
+            "objectClass": ["top", "organizationalUnit"]
+          }
         }
       }
     }

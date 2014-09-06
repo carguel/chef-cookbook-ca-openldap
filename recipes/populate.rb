@@ -41,7 +41,7 @@ parse_populate_data_bag_item do |dn, attrs|
       end
 
       if update_enable
-        lu.add_or_update_entry(dn, attrs)
+        lu.add_or_update_entry(dn, attrs, node['ca_openldap']['populate']['attributes_to_ignore'])
       else
         lu.add_entry(dn, attrs)
       end
