@@ -68,6 +68,7 @@ Additionally the key file (/etc/pki/tls/private/\<_fqdn_\>.key) is copied to `no
 
 ### Populate attributes
 * `node.ca_openldap.populate.update_enable` - when true, populate recipes performs an add or update entry rather than a simple add.
+* `node.ca_openldap.populate.attributes_to_ignore` - List of attributes not to update when update_enable is true. 
 
 ## Recipes
 
