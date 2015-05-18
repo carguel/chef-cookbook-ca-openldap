@@ -1,0 +1,13 @@
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcAllows: bind_v2
+olcConcurrency: 0
+olcConnMaxPending: 100
+structuralObjectClass: olcGlobal
+entryUUID: 04442330-90d6-1034-8d85-e345d4d2340d
+creatorsName: cn=config
+createTimestamp: 20150517114553Z
+entryCSN: 20150517114553.292875Z#000000#000#000000
+modifiersName: cn=config
+modifyTimestamp: 20150517114553Z

@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'net/ldap'
 
-$LOAD_PATH.unshift(File.expand_path('../../../libraries', __FILE__))
 require 'ldap_utils'
 
 

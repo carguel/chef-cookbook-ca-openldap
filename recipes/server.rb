@@ -42,19 +42,19 @@ directory node.ca_openldap.db_dir do
   recursive true
 end
 
-# TLS certificate and key path configuration
-if node.ca_openldap.tls.enable.to_sym != :no
-  ruby_block "tls_path_configuration" do
-    block do
+general_configuration_options = {}.merge node['ca_openldap']['general_configuration_options']
 
-      # Update TLS path configuration
-      f = Chef::Util::FileEdit.new("#{node.ca_openldap.config_dir}/cn=config.ldif")
-      f.search_file_replace_line(/olcTLSCACertificatePath:/, "olcTLSCACertificatePath: #{node.ca_openldap.tls.cacert_path}")
-      f.search_file_replace_line(/olcTLSCertificateFile:/, "olcTLSCertificateFile: #{node.ca_openldap.tls.cert_file}")
-      f.search_file_replace_line(/olcTLSCertificateKeyFile:/, "olcTLSCertificateKeyFile: #{node.ca_openldap.tls.key_file}")
-      f.write_file
-    end
-  end
+# Set options to manage TLS certificate and key path 
+if node.ca_openldap.tls.enable.to_sym != :no
+  general_configuration_options['olcTLSCACertificatePath'] = node.ca_openldap.tls.cacert_path
+  general_configuration_options['olcTLSCertificateFile'] = node.ca_openldap.tls.cert_file
+  general_configuration_options['olcTLSCertificateKeyFile'] = node.ca_openldap.tls.key_file
+end
+
+# Update general configuration options.
+ca_openldap_general_configuration "global_options" do
+  options general_configuration_options
+  not_if { general_configuration_options.empty? }
 end
 
 # TLS connection configuration

@@ -56,6 +56,12 @@ default.ca_openldap.schema_cookbook = nil
 # Default additional schemas to import
 default.ca_openldap.additional_schemas = []
 
+# Default general configuration options
+# Options set in this hash are merged into the cn=config configuration file
+# created by the package. An empty hash means that no changes are 
+# introduced in the general configuration set after package installation.
+default.ca_openldap.general_configuration_options = {}
+
 # Default DIT to create in the directory.
 # This attribute can be overriden by the 'ca_openldap/dit' data bag item.
 # If this data bag item exists, the DIT is searched under the "dit" hash key.

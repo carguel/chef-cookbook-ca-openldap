@@ -48,6 +48,7 @@ Debian and Ubuntu are planned but currently not supported.
 * `node.ca_openldap.tls.cacert_path` - Path of the directory where the CA certificates are stored (default: `"/etc/openldap/cacerts"`).
 * `node.ca_openldap.tls.cert_file` - Path of the node certificate (default: `"/etc/openldap/certs/#{node.fqdn}.pem"`). 
 * `node.ca_openldap.tls.key_file` - Path of the private key related to the node certificate (default: `"/etc/openldap/certs/#{node.fqdn}.key"`). 
+* `node.ca_openldap.general_configuration_options` - Hash of options to merge into the general configuration file (cn=config.ldif). The special value __::delete::__ implies that the option will be removed. 
 * `node.ca_openldap.use_existing_certs_and_key` - boolean configuring the support of certificates deployed with the _certificate_ cookbook. When true, assume the CA certificate, the server certificate and its related key already exist under default directory set by the _certificate_ cookbook (/etc/pki/tls for RHEL). Consequently, the following links are created:
     * `node.ca_openldap.tls.cert_file`: points to the Server certificate (/etc/pki/tls/certs/\<fqdn\>.pem for RHEL).
     * `node.ca_openldap.tls.cacert_path + "/" + cacert_hash + ".0"`: points to the CA certificate chain (/etc/pki/tls/certs/\<_hostname_\>-bundle.crt for RHEL), cacert_hash is the X509 hash of the CA certificate file.

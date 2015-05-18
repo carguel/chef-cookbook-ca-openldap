@@ -23,6 +23,8 @@ suites:
       - recipe[ca_openldap::ppolicy]
     attributes:
       ca_openldap:
+        general_configuration_options:
+          olcAllows: "::delete::"
         populate:
             update_enable: true
         tls:

@@ -9,8 +9,8 @@
         {
             "dn": "uid=test1",
             "uidNumber": "12001",
-            "uid": "test",
-            "cn": "test",
+            "uid": "test1",
+            "cn": "test1",
             "gidNumber": "12001",
             "sn": "test user",
             "userPassword": "pa$$word",
