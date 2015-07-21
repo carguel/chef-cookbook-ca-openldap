@@ -165,8 +165,8 @@ define :ca_certificate_link do
 
   directory node.ca_openldap.tls.cacert_path do
     mode 0755
-    owner "ldap"
-    group "ldap"
+    owner "root"
+    group "root"
   end
 
   ruby_block "ca_certificate_link" do
