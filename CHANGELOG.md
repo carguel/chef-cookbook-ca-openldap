@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.5.1
+ * Fix #15: set root as owner of /etc/openldap/cacerts to prevent error when ldap user does not exist.
+
 ## 0.5
  * Add support for slapd general configuration options (cn=config)
 
