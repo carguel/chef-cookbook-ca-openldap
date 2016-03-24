@@ -2,6 +2,9 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.5.2
+ * Fix #16: Log message should filter password value.
+
 ## 0.5.1
  * Fix #15: set root as owner of /etc/openldap/cacerts to prevent error when ldap user does not exist.
 

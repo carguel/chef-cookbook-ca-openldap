@@ -21,12 +21,12 @@ module Chef::Recipe::LDAPHelpers
 
   # Check that the :base key is presents in the options hash
   def check_base(opts)
-    base = opts[:base] or raise ":base option shall be provided"
+    opts[:base] or raise ":base option shall be provided"
   end
 
   # Extract the index of an OLC entry.
   def extract_index entry
-    m = entry.match /\{(\d+)\}/
+    m = entry.match(/\{(\d+)\}/)
     m[1].to_i if m
   end
 end
@@ -48,7 +48,7 @@ class Chef::Recipe::LDAPUtils
     if exists?(dn)
       Chef::Log.info("ldap entry dn=#{dn} already exists => not added")
     else
-      Chef::Log.info("add ldap entry dn=#{dn}, attributes=#{attrs}")
+      Chef::Log.info("add ldap entry dn=#{dn}, attributes=#{filter_attributes attrs}")
       @ldap.add(dn: dn, attributes: attrs) or raise "Add LDAP entry failed, cause: #{@ldap.get_operation_result}"
     end
   end
@@ -71,9 +71,8 @@ class Chef::Recipe::LDAPUtils
         accum
       end
 
-
       if not ops.empty?
-        Chef::Log.info("update ldap entry dn=#{dn}, attributes=#{attrs}")
+        Chef::Log.info("update ldap entry dn=#{dn}, attributes=#{filter_attributes attrs}")
         @ldap.modify(dn: dn, operations: ops) or raise "Update LDAP entry failed, cause: #{@ldap.get_operation_result}"
       end
     end
@@ -122,6 +121,29 @@ class Chef::Recipe::LDAPUtils
 
   private
 
+  # Filter sensible data characters (password) in values
+  # in provided hash.
+  #
+  # Each sesnsible character is replaced by a '*'.
+  #
+  # Currently, this method filter values related to a key that
+  # match password.
+  #
+  # @param [Hash] attrs hash to filter.
+  # @return [Hash] Filtered hash.
+  def filter_attributes(attrs)
+    attrs.each_with_object({}) do |key_value, hash|
+      key = key_value.first
+      value = key_value.last
+      if key.match(/password/i)
+        new_value = value.gsub(/./, '*')  
+      else
+        new_value = value
+      end
+      hash[key] = new_value
+    end
+  end
+
   # Test if an attribute must be ignored.
   #
   # The equality is based on the lowercase stringified form og the attribute and the
@@ -152,6 +174,6 @@ class Chef::Recipe::LDAPConfigUtils
 
   # Get the absolute path of an LDIF schema file given the root of the LDIF config
   def schema_path(ldif_config_dir, schema_name)
-    path = Dir["#{ldif_config_dir}/cn=config/cn=schema/*#{schema_name}.ldif"].first
+    Dir["#{ldif_config_dir}/cn=config/cn=schema/*#{schema_name}.ldif"].first
   end
 end
