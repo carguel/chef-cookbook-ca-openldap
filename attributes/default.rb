@@ -112,7 +112,7 @@ default.ca_openldap.root_dir = "/etc/openldap"
 default.ca_openldap.config_dir = "#{node.ca_openldap.root_dir}/slapd.d"
 
 # Default location of the sysconfig file configuring LDAP daemon
-default.ca_openldap.slapd_sysconfig_file = "/etc/sysconfig/slapd"
+default.ca_openldap.slapd_sysconfig_file = "/etc/sysconfig/ldap"
 
 # Enable TLS connections, possible values are
 # :no TLS access is not allowed
@@ -139,7 +139,6 @@ default.ca_openldap.use_existing_certs_and_key = true
 
 # DN of the default ppolicy configuration (relative to basedn)
 default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies"
-
 
 # Default ppolicy configuration (supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5))
 default.ca_openldap.ppolicy_default_config = {

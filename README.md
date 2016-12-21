@@ -34,9 +34,10 @@ Debian and Ubuntu are planned but currently not supported.
 
 ### Server attributes
 
-* `node.ca_openldap.db_dir` - Directory where the DBD files are created (default: `"/var/lib/ldap"`).
+* `node.ca_openldap.db_dir` - Directory where the DB files are created (default: `"/var/lib/ldap"`).
 * `node.ca_openldap.rootdn` - RootDN, relative to `node.ca_openldap.basedn` (default: `"cn=Manager"`)
 * `node.ca_openldap.rootpassword` - Root Password, it is strongly recommended to modify the default value (default: `"pa$$word"`) 
+* `node.ca_openldap.slapd_sysconfig_file` - Default location of the sysconfig file configuring LDAP daemon (default: `"/etc/sysconfig/ldap"`)
 * `node.ca_openldap.ldap_log_level` - Log level - see [Slapd config] (http://www.openldap.org/doc/admin24/slapdconfig.html) for explanation of supported values (default: `"-1"`)
 * `node.ca_openldap.acls` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
 * `node.ca_openldap.default_ports.ldap` - Port of the 'clear' LDAP socket, used only when ca\_openldap.tls.enable is to `:no` or `:yes`
