@@ -91,22 +91,50 @@ if (use_ldaps == "yes") && node.ca_openldap.use_existing_certs_and_key
   end
 end
 
-# Configure the base DN, the root DN and its password
+# Configure the database backend (defining among others the base DN, the root DN and its password)
 my_root_dn = build_rootdn
-ruby_block "bdb_config" do
+ruby_block "db_backend_config" do
   block do
 
-    slapd_conf_file = '/etc/openldap/slapd.d/cn=config/olcDatabase={2}bdb.ldif'
-    password = LDAPUtils.ssha_password(node.ca_openldap.rootpassword)
+    # rename db backend conf file according to the chosen backend
+    db_conf_file = Dir["#{node.ca_openldap.config_dir}/cn=config/olcDatabase=\{*\}{hdb,bdb,mdb}.ldif"].first
+    db_conf_file_init_name_data = File.basename(db_conf_file).match(/{(?<db_index>[[:digit:]]+)}(?<db_backend>[[:alpha:]]+)\.ldif/)
+    db_index = db_conf_file_init_name_data['db_index']
+    init_db_backend = db_conf_file_init_name_data['db_backend']
+    target_db_backend = node.ca_openldap.db_backend
+    if ! target_db_backend.eql? init_db_backend
+      db_conf_file_old = db_conf_file
+      db_conf_file = "#{File.dirname(db_conf_file)}/olcDatabase={#{db_index}}#{target_db_backend}.ldif"
+      File.rename(db_conf_file_old, db_conf_file)
+    end
 
-    #configure suffix
-    f = Chef::Util::FileEdit.new(slapd_conf_file)
+    # open the file
+    f = Chef::Util::FileEdit.new(db_conf_file)
+    
+    # if the db backend chosen isn't the default one, modify the file accordingly
+    if ! target_db_backend.eql? init_db_backend
+      #configure database
+      f.search_file_replace_line(/dn:/, "dn: olcDatabase={#{db_index}}#{target_db_backend}")
+      f.search_file_replace_line(/olcDatabase:/, "olcDatabase: {#{db_index}}#{target_db_backend}")
+
+      #configure database class
+      upFirstLetter = ->(string) { string.slice(0,1).capitalize + string.slice(1..-1) }
+      old_db_object_class = 'olc' + upFirstLetter.call(init_db_backend) + 'Config'
+      new_db_object_class = 'olc' + upFirstLetter.call(target_db_backend) + 'Config'
+      f.search_file_replace_line(/objectClass:[[:blank:]]*#{old_db_object_class}/, "objectClass: #{new_db_object_class}")
+      f.search_file_replace_line(/structuralObjectClass:/, "structuralObjectClass: #{new_db_object_class}")
+    end
+
+    #configure database storage irectory
     f.search_file_replace_line(/olcDbDirectory:/, "olcDbDirectory: #{node.ca_openldap.db_dir}")
+    
+    #configure suffix
     f.search_file_replace_line(/olcSuffix:/, "olcSuffix: #{node.ca_openldap.basedn}")
 
     #configure root dn and root password
     f.search_file_replace_line(/olcRootDN:/, "olcRootDN: #{my_root_dn}")
     f.search_file_delete_line(/olcRootPW:/)
+    password = LDAPUtils.ssha_password(node.ca_openldap.rootpassword)
     f.insert_line_after_match(/olcRootDN:/, "olcRootPW: #{password}")
     
     #configure log level

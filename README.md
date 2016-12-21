@@ -35,6 +35,7 @@ Debian and Ubuntu are planned but currently not supported.
 ### Server attributes
 
 * `node.ca_openldap.db_dir` - Directory where the DB files are created (default: `"/var/lib/ldap"`).
+* `node.ca_openldap.db_backend` - Type of OpenLDAP database backend used (default: `"mdb"`).
 * `node.ca_openldap.rootdn` - RootDN, relative to `node.ca_openldap.basedn` (default: `"cn=Manager"`)
 * `node.ca_openldap.rootpassword` - Root Password, it is strongly recommended to modify the default value (default: `"pa$$word"`) 
 * `node.ca_openldap.slapd_sysconfig_file` - Default location of the sysconfig file configuring LDAP daemon (default: `"/etc/sysconfig/ldap"`)

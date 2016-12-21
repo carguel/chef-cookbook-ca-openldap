@@ -23,7 +23,6 @@ default.ca_openldap.basedn = "dc=example,dc=com"
 # Default openldap server
 default.ca_openldap.ldap_server = "localhost"
 
-
 # Openldap listening port (those attributes configure the slapd listening ports)
 default.ca_openldap.default_ports.ldap = "389"
 default.ca_openldap.default_ports.ldaps = "636"
@@ -32,7 +31,13 @@ default.ca_openldap.default_ports.ldaps = "636"
 # If only ldaps is enable, this attribute must be overriden accordingly
 default.ca_openldap.ldap_port = node.ca_openldap.default_ports.ldap
 
+# Openldap database storage directory
 default.ca_openldap.db_dir = "/var/lib/ldap"
+
+# Type of OpenLDAP database backend used
+# Supported database backends are: hdb, bdb, mdb
+# Note: it is assumed that the database backend object class name looks like: "olc[Backend]Config"
+default.ca_openldap.db_backend = "mdb"
 
 # Default rootDN (relative to the basedn)
 default.ca_openldap.rootdn = "cn=Manager"
