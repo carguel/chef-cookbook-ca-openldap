@@ -72,7 +72,7 @@ ruby_block "tls_connection_configuration" do
     f.search_file_replace_line(/SLAPD_LDAP=/, "SLAPD_LDAP=no")
     f.search_file_replace_line(/SLAPD_LDAPS=/, "SLAPD_LDAPS=no")
     f.search_file_replace_line(/SLAPD_LDAPI=/, "SLAPD_LDAPI=yes")
-    f.search_file_replace_line(/SLAPD_URLS=/, "SLAPD_URLS=\"#{urls.join ""}\"")
+    f.search_file_replace_line(/SLAPD_URLS=/, "SLAPD_URLS=\"#{urls.join " "}\"")
     f.write_file
   end
 end
