@@ -111,6 +111,9 @@ default.ca_openldap.root_dir = "/etc/openldap"
 # Root directory of the slapd configuration
 default.ca_openldap.config_dir = "#{node.ca_openldap.root_dir}/slapd.d"
 
+# Default location of the sysconfig file configuring LDAP daemon
+default.ca_openldap.slapd_sysconfig_file = "/etc/sysconfig/slapd"
+
 # Enable TLS connections, possible values are
 # :no TLS access is not allowed
 # :yes both clear and TLS accesses are allowed

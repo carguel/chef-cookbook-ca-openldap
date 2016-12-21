@@ -68,7 +68,7 @@ urls << "ldaps://*:#{ldaps_port}" if use_ldaps == "yes"
 
 ruby_block "tls_connection_configuration" do
   block do
-    f = Chef::Util::FileEdit.new("/etc/sysconfig/ldap")
+    f = Chef::Util::FileEdit.new(node.ca_openldap.slapd_sysconfig_file)
     f.search_file_replace_line(/SLAPD_LDAP=/, "SLAPD_LDAP=no")
     f.search_file_replace_line(/SLAPD_LDAPS=/, "SLAPD_LDAPS=no")
     f.search_file_replace_line(/SLAPD_LDAPI=/, "SLAPD_LDAPI=yes")
