@@ -32,7 +32,12 @@ module Chef::Recipe::CAOpenldap
         dn = Chef::Recipe::LDAPUtils.build_dn(entry['dn'], branch_dn)
         attrs = entry
         attrs.delete('dn')
-        attrs["objectClass"] = default_classes
+
+        # Generate the objectClass attribute if no specific one is specified on the current entry
+        # Also make sure that this attribute is the first one within the hash (it would be ignored otherwise)
+        if (!attrs.has_key? 'objectClass')
+          attrs = { objectClass: default_classes }.merge(attrs)
+        end
 
         yield(dn, attrs)
 
