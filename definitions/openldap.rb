@@ -75,28 +75,25 @@ define :ldap_additional_schema do
   end
 
   # add the updated LDIF into the local LDAP instance
-  ruby_block "imported_schema_#{schema}" do
+  load_ldap_schema do
+    schema_name schema
+    schema_path ldap_config.schema_path(ldif_dir, schema)
+  end
+end
+
+# Load some LDAP schema (which name and path are provided as entry parameters) to LDAP database
+define :load_ldap_schema do
+  schema_name = params[:schema_name]
+  schema_path = params[:schema_path]
+
+  ruby_block "load_schema_#{schema_name}" do
     block do
-      ldif = ldap_config.schema_path(ldif_dir, schema)
-      system "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config < #{ldif}"
+      system "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config < #{schema_path}"
     end
     action :create
     not_if do
       lcu = Chef::Recipe::LDAPConfigUtils.new
-      lcu.contains?(base: "cn=schema,cn=config", filter: "'(cn=*#{schema})'")
-    end
-  end
-end
-
-# Load some core LDAP schemas specified as entry parameters to LDAP database
-# (N.B. by default, only the core.ldif schema is loaded)
-define :include_schemas do
-  schemas = params[:schemas]
-  ldap_schemas_dir = params[:ldap_schemas_dir]
-
-  params[:schemas].each do |schema|
-    execute "include_#{schema}_schema" do
-      command "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config -f #{ldap_schemas_dir}/#{schema}.ldif"
+      lcu.contains?(base: "cn=schema,cn=config", filter: "'(cn=*#{schema_name})'")
     end
   end
 end

@@ -25,9 +25,11 @@ ldif_dir = "/tmp/ldif_schemas"
 
 # Load all configured core LDAP schemas to LDAP database
 # (N.B. by default, only the core schema is loaded)
-include_schemas do
-  schemas node.ca_openldap.default_schemas
-  ldap_schemas_dir schema_dir
+node.ca_openldap.default_schemas.each do |schema_name|
+  load_ldap_schema do
+    schema_name schema_name
+    schema_path "#{schema_dir}/#{schema_name}.ldif"
+  end
 end
 
 # Copy the additional schemas from the cookbook file distribution
