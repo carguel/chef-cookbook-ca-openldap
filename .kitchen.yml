@@ -7,17 +7,17 @@ driver:
 
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
+  log_level: info
 
 platforms:
-  - name: centos-6.5
-    driver:
-      box: opscode-centos-6.5
+  - name: centos-7.2
 
 suites:
   - name: default
     run_list:
       - recipe[ca_openldap::server]
+      - recipe[ca_openldap::schemas]
       - recipe[ca_openldap::dit]
       - recipe[ca_openldap::populate]
       - recipe[ca_openldap::ppolicy]
@@ -29,3 +29,4 @@ suites:
             update_enable: true
         tls:
             enable: "no"
+        slapd_sysconfig_file: "/etc/sysconfig/slapd"

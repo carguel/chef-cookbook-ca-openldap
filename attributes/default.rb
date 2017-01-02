@@ -53,6 +53,12 @@ default.ca_openldap.ldap_log_level = "-1"
 default.ca_openldap.acls = ["to attrs=userPassword by self =xw by anonymous auth by * none", 
                             "to * by self write by users read by * none"]
 
+# Default set of core LDAP schemas to load into LDAP database right after startup
+# (beside the core.ldif schema which is loaded as part of the installation process)
+# Each array entry shall consist of the desired schema file name without extension.
+# An associated .ldif file shall then be available within "node.ca_openldap.schema_dir" directory.
+default.ca_openldap.default_schemas = %w(cosine nis inetorgperson)
+
 # Default cookbook which defines the schemas to import
 # The cookbook shall store these schemas under files/default/schemas/
 # Each schema file shall have a .schema extension
@@ -116,8 +122,14 @@ default.ca_openldap.root_dir = "/etc/openldap"
 # Root directory of the slapd configuration
 default.ca_openldap.config_dir = "#{node.ca_openldap.root_dir}/slapd.d"
 
+# Directory containing all standard LDAP schema files (i.e. the ones provided by the installation package)
+default.ca_openldap.schema_dir = "#{node.ca_openldap.root_dir}/schema"
+
 # Default location of the sysconfig file configuring LDAP daemon
 default.ca_openldap.slapd_sysconfig_file = "/etc/sysconfig/ldap"
+
+# Enable LDAPI connections (required to load any LDAP schema beside the core.ldif one)
+default.ca_openldap.enable_ldapi = true
 
 # Enable TLS connections, possible values are
 # :no TLS access is not allowed

@@ -18,7 +18,7 @@
 #
 
 # Generate LDIF schemas related to the schema definitions included in a directory.
-define :ldif_schemas do
+define :ldif_additional_schemas do
   ldif_dir = params[:ldif_dir]
   schema_dir = params[:schema_dir]
   import_file = "#{ldif_dir}/import_schemas.conf"
@@ -44,15 +44,15 @@ define :ldif_schemas do
   end
 
   # Convert the schemas to LDIF
-  execute "ldif_schemas" do
+  execute "ldif_additional_schemas" do
     command "slaptest -f #{import_file} -F #{ldif_dir}"
     action :run
   end
 end
 
 
-# Add a schema defined as LDIF into the local LDAP instance.
-define :ldap_schema do
+# Add a schema defined as LDIF (previously processed by :ldif_additional_schemas) into the local LDAP instance.
+define :ldap_additional_schema do
   ldif_dir = params[:ldif_dir]
   schema = params[:schema]
 
@@ -84,6 +84,19 @@ define :ldap_schema do
     not_if do
       lcu = Chef::Recipe::LDAPConfigUtils.new
       lcu.contains?(base: "cn=schema,cn=config", filter: "'(cn=*#{schema})'")
+    end
+  end
+end
+
+# Load some core LDAP schemas specified as entry parameters to LDAP database
+# (N.B. by default, only the core.ldif schema is loaded)
+define :include_schemas do
+  schemas = params[:schemas]
+  ldap_schemas_dir = params[:ldap_schemas_dir]
+
+  params[:schemas].each do |schema|
+    execute "include_#{schema}_schema" do
+      command "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config -f #{ldap_schemas_dir}/#{schema}.ldif"
     end
   end
 end

@@ -63,8 +63,10 @@ ldap_port = node.ca_openldap.default_ports.ldap
 ldaps_port = node.ca_openldap.default_ports.ldaps
 
 urls = []
+urls << "ldapi:///" if node.ca_openldap.enable_ldapi
 urls << "ldap://*:#{ldap_port}" if use_ldap == "yes"
 urls << "ldaps://*:#{ldaps_port}" if use_ldaps == "yes"
+Chef::Log.info("SLAPD_URLS will be configured with: #{urls.join " "}")
 
 ruby_block "tls_connection_configuration" do
   block do
@@ -156,3 +158,4 @@ ruby_block "db_backend_config" do
   action :create
   notifies :start, "service[slapd]", :immediately
 end
+

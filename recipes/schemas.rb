@@ -18,11 +18,19 @@
 #
 
 include_recipe 'ca_openldap::default'
+include_recipe 'ca_openldap::server'
 
-schema_dir = "/etc/openldap/schema"
+schema_dir = node.ca_openldap.schema_dir
 ldif_dir = "/tmp/ldif_schemas"
 
-# Copy the schemas from the cookbook file distribution
+# Load all configured core LDAP schemas to LDAP database
+# (N.B. by default, only the core schema is loaded)
+include_schemas do
+  schemas node.ca_openldap.default_schemas
+  ldap_schemas_dir schema_dir
+end
+
+# Copy the additional schemas from the cookbook file distribution
 remote_directory schema_dir do
   cookbook node.ca_openldap.schema_cookbook
   source "schemas"
@@ -30,17 +38,19 @@ remote_directory schema_dir do
   files_mode 00644
   files_owner 'root'
   files_group 'root'
+  not_if { node.ca_openldap.additional_schemas.empty? }
 end
 
-#convert schemas as LDIF
-ldif_schemas  do
+#convert additional schemas as LDIF
+ldif_additional_schemas do
   ldif_dir ldif_dir
   schema_dir schema_dir
+  not_if { node.ca_openldap.additional_schemas.empty? }
 end
 
-#import schemas into LDAP
+#import additional schemas into LDAP
 node.ca_openldap.additional_schemas.each do |schema_name|
-  ldap_schema "ldap_schema_#{schema_name}" do
+  ldap_additional_schema "ldap_schema_#{schema_name}" do
     ldif_dir ldif_dir
     schema schema_name
   end

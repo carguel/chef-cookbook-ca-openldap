@@ -63,8 +63,10 @@ Additionally the key file (/etc/pki/tls/private/\<_fqdn_\>.key) is copied to `no
 
 ### Schema attributes
 
-* `node.ca_openldap.schema_cookbook` - cookbook name which includes additional schema do set up, schemas are search as cookbook distribution files, under files/default/schemas/ (default: nil)
-* `node.ca_openldap.additional_schemas` - List of schemas to import in the directory, the suffix ".schema" is added to each item of the list to build the complete file name (default : [])
+* `node.ca_openldap.schema_dir` - Directory that should contain core schema files (and to which additional schemas should be copied) (default: `"/etc/openldap/schema"`)
+* `node.ca_openldap.default_schemas` - Default set of core LDAP schemas to load into LDAP database beside the core.ldif schema (default: `%w(cosine nis inetorgperson)`)
+* `node.ca_openldap.schema_cookbook` - Name of the cookbook which includes additional schemas to set up. Schemas are search as cookbook distribution files, under files/default/schemas/ (default: nil)
+* `node.ca_openldap.additional_schemas` - List of schemas to import in the directory, the suffix ".schema" is added to each item of the list to build the complete file name (default: [])
 
 ### DIT attributes
 * `node.ca_openldap.dit` - JSON structure which defines the DIT, this attribute can be overriden by the `ca_openldap/dit` data bag item, see `dit` recipe for additional information.
