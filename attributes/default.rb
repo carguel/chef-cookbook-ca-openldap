@@ -57,7 +57,7 @@ default.ca_openldap.acls = ["to attrs=userPassword by self =xw by anonymous auth
 # (beside the core.ldif schema which is loaded as part of the installation process)
 # Each array entry shall consist of the desired schema file name without extension.
 # An associated .ldif file shall then be available within "node.ca_openldap.schema_dir" directory.
-default.ca_openldap.default_schemas = %w(cosine nis inetorgperson)
+default.ca_openldap.default_schemas = %w(cosine nis inetorgperson ppolicy)
 
 # Default cookbook which defines the schemas to import
 # The cookbook shall store these schemas under files/default/schemas/
