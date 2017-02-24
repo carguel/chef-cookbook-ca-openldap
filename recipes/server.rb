@@ -51,6 +51,9 @@ if node.ca_openldap.tls.enable.to_sym != :no
   general_configuration_options['olcTLSCertificateKeyFile'] = node.ca_openldap.tls.key_file
 end
 
+# Configure the log level as a general configuration option
+general_configuration_options['olcLogLevel'] = node.ca_openldap.ldap_log_level
+
 # Update general configuration options.
 ca_openldap_general_configuration "global_options" do
   options general_configuration_options
@@ -139,10 +142,6 @@ ruby_block "db_backend_config" do
     password = LDAPUtils.ssha_password(node.ca_openldap.rootpassword)
     f.insert_line_after_match(/olcRootDN:/, "olcRootPW: #{password}")
     
-    #configure log level
-    f.search_file_delete_line(/olcLogLevel:/)
-    f.insert_line_after_match(/olcRootPW:/, "olcLogLevel: #{node.ca_openldap.ldap_log_level}")
-    
     #configure acl
     f.search_file_delete_line(/olcAccess:/)
     index = 0
@@ -151,7 +150,7 @@ ruby_block "db_backend_config" do
       index+= 1
       acum
     end
-    f.insert_line_after_match(/olcLogLevel:/, acls)
+    f.insert_line_after_match(/olcRootPW:/, acls)
 
     f.write_file
   end
