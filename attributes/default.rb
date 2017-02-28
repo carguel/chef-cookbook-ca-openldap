@@ -170,7 +170,6 @@ default.ca_openldap.ppolicy_default_config = {
   pwdFailureCountInterval: "0",
   pwdLockout: "TRUE",
   pwdLockoutDuration: "0",
-  pwdAllowUserChange: "TRUE",
   pwdExpireWarning: "0",
   pwdGraceAuthNLimit: "0",
   pwdMustChange: "FALSE",
