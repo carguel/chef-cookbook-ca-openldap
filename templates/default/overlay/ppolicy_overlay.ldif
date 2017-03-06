@@ -1,8 +1,8 @@
-dn: olcOverlay=ppolicy,olcDatabase={2}<%=node.ca_openldap.db_backend%>,cn=config
+dn: olcOverlay=ppolicy,olcDatabase={2}<%=node['ca_openldap']['db_backend']%>,cn=config
 objectClass: olcOverlayConfig
 objectClass: olcPPolicyConfig
 olcOverlay: ppolicy
-olcPPolicyDefault: <%=node.ca_openldap.ppolicy_default_config_dn%>,<%=node.ca_openldap.basedn%>
-olcPPolicyHashCleartext: <%=node.ca_openldap.ppolicy.hash_clear_text%>
+olcPPolicyDefault: <%=node['ca_openldap']['ppolicy_default_config_dn']%>,<%=node['ca_openldap']['basedn']%>
+olcPPolicyHashCleartext: <%=node['ca_openldap']['ppolicy']['hash_clear_text']%>
 olcPPolicyUseLockout: FALSE
 olcPPolicyForwardUpdates: FALSE

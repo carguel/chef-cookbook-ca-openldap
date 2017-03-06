@@ -30,7 +30,8 @@ end
 
 my_root_dn = build_rootdn()
 ldap_config = Chef::Recipe::LDAPConfigUtils.new
-ldap = Chef::Recipe::LDAPUtils.new(node.ca_openldap.ldap_server, node.ca_openldap.ldap_port, my_root_dn, node.ca_openldap.rootpassword, tls_enable?(node.ca_openldap.tls.enable) )
+ldap = Chef::Recipe::LDAPUtils.new(node['ca_openldap']['ldap_server'], node['ca_openldap']['ldap_port'].to_i,
+                                   my_root_dn, node['ca_openldap']['rootpassword'], tls_enable?(node['ca_openldap']['tls']['enable']) )
 
 
 tmp_ppolicy_overlay_ldif = "/tmp/ppolicy_overlay.ldif"
@@ -64,9 +65,9 @@ ruby_block "ppolicy_config" do
     attrs = {
       objectClass: ["pwdPolicy", "person", "top", "pwdPolicyChecker"],
       sn: "PPolicy default config"
-    }.merge(node.ca_openldap.ppolicy_default_config)
+    }.merge(node['ca_openldap']['ppolicy_default_config'])
 
-    ppolicy_default_config_dn = [node.ca_openldap.ppolicy_default_config_dn, node.ca_openldap.basedn].join(",")
+    ppolicy_default_config_dn = [node['ca_openldap']['ppolicy_default_config_dn'], node['ca_openldap']['basedn']].join(",")
     ldap.add_or_update_entry(ppolicy_default_config_dn, attrs)
   end
   action :create

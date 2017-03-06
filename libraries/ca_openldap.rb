@@ -51,7 +51,7 @@ module Chef::Recipe::CAOpenldap
   # to build the absolute rootdn.
   # @return [String] the absolute rootdn.
   def build_rootdn 
-    [node.ca_openldap.rootdn, node.ca_openldap.basedn].join(',')
+    [node['ca_openldap']['rootdn'], node['ca_openldap']['basedn']].join(',')
   end
 
   # Determine if slapd must use LDAP and/or LDAPS protocol depending on the tls_mode.

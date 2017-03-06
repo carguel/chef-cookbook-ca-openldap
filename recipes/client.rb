@@ -27,7 +27,7 @@ package "openldap-clients" do
   action :upgrade
 end
 
-ldap_conf = case node[:platform_family]
+ldap_conf = case node['platform_family']
 when "rhel"
   "/etc/openldap/ldap.conf"
 else

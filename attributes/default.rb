@@ -18,60 +18,60 @@
 #
 
 # Default base dn
-default.ca_openldap.basedn = "dc=example,dc=com"
+default['ca_openldap']['basedn'] = "dc=example,dc=com"
 
 # Default openldap server
-default.ca_openldap.ldap_server = "localhost"
+default['ca_openldap']['ldap_server'] = "localhost"
 
 # Openldap listening port (those attributes configure the slapd listening ports)
-default.ca_openldap.default_ports.ldap = "389"
-default.ca_openldap.default_ports.ldaps = "636"
+default['ca_openldap']['default_ports']['ldap'] = "389"
+default['ca_openldap']['default_ports']['ldaps'] = "636"
 
 # Openldap port to connect to for DIT creation and populate
 # If only ldaps is enable, this attribute must be overriden accordingly
-default.ca_openldap.ldap_port = node.ca_openldap.default_ports.ldap
+default['ca_openldap']['ldap_port'] = node['ca_openldap']['default_ports']['ldap']
 
 # Openldap database storage directory
-default.ca_openldap.db_dir = "/var/lib/ldap"
+default['ca_openldap']['db_dir'] = "/var/lib/ldap"
 
 # Type of OpenLDAP database backend used
 # Supported database backends are: hdb, bdb, mdb
 # Note: it is assumed that the database backend object class name looks like: "olc[Backend]Config"
-default.ca_openldap.db_backend = "mdb"
+default['ca_openldap']['db_backend'] = "mdb"
 
 # Default rootDN (relative to the basedn)
-default.ca_openldap.rootdn = "cn=Manager"
+default['ca_openldap']['rootdn'] = "cn=Manager"
 
 # Default rootPassword, will be stored in SSHA
 # It should be overriden by a role attribute
-default.ca_openldap.rootpassword = "pa$$word"
+default['ca_openldap']['rootpassword'] = "pa$$word"
 
 # Default log level of the accesses to the bdb database
-default.ca_openldap.ldap_log_level = "-1"
+default['ca_openldap']['ldap_log_level'] = "-1"
 
 # Default ACL
-default.ca_openldap.acls = ["to attrs=userPassword by self =xw by anonymous auth by * none", 
+default['ca_openldap']['acls'] = ["to attrs=userPassword by self =xw by anonymous auth by * none", 
                             "to * by self write by users read by * none"]
 
 # Default set of core LDAP schemas to load into LDAP database right after startup
 # (beside the core.ldif schema which is loaded as part of the installation process)
 # Each array entry shall consist of the desired schema file name without extension.
-# An associated .ldif file shall then be available within "node.ca_openldap.schema_dir" directory.
-default.ca_openldap.default_schemas = %w(cosine nis inetorgperson ppolicy)
+# An associated .ldif file shall then be available within "node['ca_openldap']['schema_dir']" directory.
+default['ca_openldap']['default_schemas'] = %w(cosine nis inetorgperson ppolicy)
 
 # Default cookbook which defines the schemas to import
 # The cookbook shall store these schemas under files/default/schemas/
 # Each schema file shall have a .schema extension
-default.ca_openldap.schema_cookbook = nil
+default['ca_openldap']['schema_cookbook'] = nil
 
 # Default additional schemas to import
-default.ca_openldap.additional_schemas = []
+default['ca_openldap']['additional_schemas'] = []
 
 # Default general configuration options
 # Options set in this hash are merged into the cn=config configuration file
 # created by the package. An empty hash means that no changes are 
 # introduced in the general configuration set after package installation.
-default.ca_openldap.general_configuration_options = {}
+default['ca_openldap']['general_configuration_options'] = {}
 
 # Default DIT to create in the directory.
 # This attribute can be overriden by the 'ca_openldap/dit' data bag item.
@@ -81,8 +81,8 @@ default.ca_openldap.general_configuration_options = {}
 # - the value is a hash including the following keys:
 #   - "attrs": hash defining all attributes of the entry
 #   - "children": hash of the children entries
-default.ca_openldap.dit = {
-  "#{node.ca_openldap.basedn}" => {
+default['ca_openldap']['dit'] = {
+  "#{node['ca_openldap']['basedn']}" => {
     attrs: {
       objectClass: ["organization", "dcObject"], 
       description: "DN description", 
@@ -110,55 +110,55 @@ default.ca_openldap.dit = {
 
 # When update mode is enable, populate recipe performs an add or update entry
 # rather than a simple add
-default.ca_openldap.populate.update_enable = false
+default['ca_openldap']['populate']['update_enable'] = false
 
 # List of attributes that must not be updated when update mode
 # is enabled.
-default.ca_openldap.populate.attributes_to_ignore = []
+default['ca_openldap']['populate']['attributes_to_ignore'] = []
 
 # Root directory of the openldap configuration
-default.ca_openldap.root_dir = "/etc/openldap"
+default['ca_openldap']['root_dir'] = "/etc/openldap"
 
 # Root directory of the slapd configuration
-default.ca_openldap.config_dir = "#{node.ca_openldap.root_dir}/slapd.d"
+default['ca_openldap']['config_dir'] = "#{node['ca_openldap']['root_dir']}/slapd.d"
 
 # Directory containing all standard LDAP schema files (i.e. the ones provided by the installation package)
-default.ca_openldap.schema_dir = "#{node.ca_openldap.root_dir}/schema"
+default['ca_openldap']['schema_dir'] = "#{node['ca_openldap']['root_dir']}/schema"
 
 # Default location of the sysconfig file configuring LDAP daemon
-default.ca_openldap.slapd_sysconfig_file = "/etc/sysconfig/ldap"
+default['ca_openldap']['slapd_sysconfig_file'] = "/etc/sysconfig/ldap"
 
 # Enable LDAPI connections (required to load any LDAP schema beside the core.ldif one)
-default.ca_openldap.enable_ldapi = true
+default['ca_openldap']['enable_ldapi'] = true
 
 # Enable TLS connections, possible values are
 # :no TLS access is not allowed
 # :yes both clear and TLS accesses are allowed
 # :exclusive only TLS access is allowed 
-default.ca_openldap.tls.enable = :exclusive
+default['ca_openldap']['tls']['enable'] = :exclusive
 
 # Path of the directory which contains the TLS CA certificates
-default.ca_openldap.tls.cacert_path = "/etc/openldap/cacerts"
+default['ca_openldap']['tls']['cacert_path'] = "/etc/openldap/cacerts"
 
 # Path of the TLS certificate file
-default.ca_openldap.tls.cert_file = "/etc/openldap/certs/#{node.fqdn}.pem"
+default['ca_openldap']['tls']['cert_file'] = "/etc/openldap/certs/#{node['fqdn']}.pem"
 
 # Path of the TLS key file
-default.ca_openldap.tls.key_file = "/etc/openldap/certs/#{node.fqdn}.key"
+default['ca_openldap']['tls']['key_file'] = "/etc/openldap/certs/#{node['fqdn']}.key"
 
 # Assume the CA certificate, the server certificate and its related key already exist under default directory (/etc/pki/tls for RHEL).
 # When this attribute is set to true, the following links are created:
-# * node.ca_openldap.tls.cert_file: points to the Server certificate (/etc/pki/tls/certs/<fqdn>.pem for RHEL)
-# * node.ca_openldap.tls.cacert_path + "/" + cacert_hash + ".0": points to the CA certificate chain (/etc/pki/tls/certs/<hostname>-bundle.crt for RHEL), cacert_hash is the X509 hash of the CA certificate file
-# Additionally the key file (/etc/pki/tls/private/<fqdn>.key) is copied to node.ca_openldap.tls.key_file.
+# * node['ca_openldap']['tls']['cert_file']: points to the Server certificate (/etc/pki/tls/certs/<fqdn>.pem for RHEL)
+# * node['ca_openldap']['tls']['cacert_path'] + "/" + cacert_hash + ".0": points to the CA certificate chain (/etc/pki/tls/certs/<hostname>-bundle.crt for RHEL), cacert_hash is the X509 hash of the CA certificate file
+# Additionally the key file (/etc/pki/tls/private/<fqdn>.key) is copied to node['ca_openldap']['tls']['key_file'].
 # This attribute is helpfull when certificates are deployed with the _certificate_ cookbook.
-default.ca_openldap.use_existing_certs_and_key = true
+default['ca_openldap']['use_existing_certs_and_key'] = true
 
 # DN of the default ppolicy configuration (relative to basedn)
-default.ca_openldap.ppolicy_default_config_dn = "cn=passwordDefault,ou=policies"
+default['ca_openldap']['ppolicy_default_config_dn'] = "cn=passwordDefault,ou=policies"
 
 # Default ppolicy configuration (supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5))
-default.ca_openldap.ppolicy_default_config = {
+default['ca_openldap']['ppolicy_default_config'] = {
   pwdAllowUserChange: "TRUE",
   pwdAttribute: "userPassword",
   pwdCheckQuality: "0",
@@ -177,4 +177,4 @@ default.ca_openldap.ppolicy_default_config = {
 }
 
 # ppolicy overlay parameters
-default.ca_openldap.ppolicy.hash_clear_text = 'FALSE'
+default['ca_openldap']['ppolicy']['hash_clear_text'] = 'FALSE'

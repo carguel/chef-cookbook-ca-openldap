@@ -28,7 +28,7 @@ require 'net/ldap'
 include_recipe 'ca_openldap::default'
 
 my_root_dn = build_rootdn()
-tls_enable = tls_enable?(node.ca_openldap.tls.enable)
+tls_enable = tls_enable?(node['ca_openldap']['tls']['enable'])
 
 ruby_block "Create_DIT" do
   block do 
@@ -42,11 +42,12 @@ ruby_block "Create_DIT" do
         Chef::Log.info 'load dit data bag'
         data_bag_item('ca_openldap', 'dit')["dit"]
       else
-        node.ca_openldap.dit
+        node['ca_openldap']['dit']
       end
     end
 
-    lu = LDAPUtils.new(node.ca_openldap.ldap_server, node.ca_openldap.ldap_port.to_i, my_root_dn, node.ca_openldap.rootpassword, tls_enable)
+    lu = LDAPUtils.new(node['ca_openldap']['ldap_server'], node['ca_openldap']['ldap_port'].to_i,
+                       my_root_dn, node['ca_openldap']['rootpassword'], tls_enable)
 
     # The parse method is defined dynamically in order to have access to the lu variable.
     # This is a recursive method.

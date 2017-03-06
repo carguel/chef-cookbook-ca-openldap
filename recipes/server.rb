@@ -35,7 +35,7 @@ service "slapd" do
   action [:enable, :stop]
 end
 
-directory node.ca_openldap.db_dir do
+directory node['ca_openldap']['db_dir'] do
   user "ldap"
   group "ldap"
   mode 0700
@@ -45,14 +45,14 @@ end
 general_configuration_options = {}.merge node['ca_openldap']['general_configuration_options']
 
 # Set options to manage TLS certificate and key path 
-if node.ca_openldap.tls.enable.to_sym != :no
-  general_configuration_options['olcTLSCACertificatePath'] = node.ca_openldap.tls.cacert_path
-  general_configuration_options['olcTLSCertificateFile'] = node.ca_openldap.tls.cert_file
-  general_configuration_options['olcTLSCertificateKeyFile'] = node.ca_openldap.tls.key_file
+if node['ca_openldap']['tls']['enable'].to_sym != :no
+  general_configuration_options['olcTLSCACertificatePath'] = node['ca_openldap']['tls']['cacert_path']
+  general_configuration_options['olcTLSCertificateFile'] = node['ca_openldap']['tls']['cert_file']
+  general_configuration_options['olcTLSCertificateKeyFile'] = node['ca_openldap']['tls']['key_file']
 end
 
 # Configure the log level as a general configuration option
-general_configuration_options['olcLogLevel'] = node.ca_openldap.ldap_log_level
+general_configuration_options['olcLogLevel'] = node['ca_openldap']['ldap_log_level']
 
 # Update general configuration options.
 ca_openldap_general_configuration "global_options" do
@@ -61,19 +61,19 @@ ca_openldap_general_configuration "global_options" do
 end
 
 # TLS connection configuration
-(use_ldap, use_ldaps) = use_ldap_or_ldaps?(node.ca_openldap.tls.enable.to_sym)
-ldap_port = node.ca_openldap.default_ports.ldap
-ldaps_port = node.ca_openldap.default_ports.ldaps
+(use_ldap, use_ldaps) = use_ldap_or_ldaps?(node['ca_openldap']['tls']['enable'].to_sym)
+ldap_port = node['ca_openldap']['default_ports']['ldap']
+ldaps_port = node['ca_openldap']['default_ports']['ldaps']
 
 urls = []
-urls << "ldapi:///" if node.ca_openldap.enable_ldapi
+urls << "ldapi:///" if node['ca_openldap']['enable_ldapi']
 urls << "ldap://*:#{ldap_port}" if use_ldap == "yes"
 urls << "ldaps://*:#{ldaps_port}" if use_ldaps == "yes"
 Chef::Log.info("SLAPD_URLS will be configured with: #{urls.join " "}")
 
 ruby_block "tls_connection_configuration" do
   block do
-    f = Chef::Util::FileEdit.new(node.ca_openldap.slapd_sysconfig_file)
+    f = Chef::Util::FileEdit.new(node['ca_openldap']['slapd_sysconfig_file'])
     f.search_file_replace_line(/SLAPD_LDAP=/, "SLAPD_LDAP=no")
     f.search_file_replace_line(/SLAPD_LDAPS=/, "SLAPD_LDAPS=no")
     f.search_file_replace_line(/SLAPD_LDAPI=/, "SLAPD_LDAPI=yes")
@@ -82,7 +82,7 @@ ruby_block "tls_connection_configuration" do
   end
 end
 
-if (use_ldaps == "yes") && node.ca_openldap.use_existing_certs_and_key
+if (use_ldaps == "yes") && node['ca_openldap']['use_existing_certs_and_key']
   server_certificate_link do
     action :create
   end
@@ -102,11 +102,11 @@ ruby_block "db_backend_config" do
   block do
 
     # rename db backend conf file according to the chosen backend
-    db_conf_file = Dir["#{node.ca_openldap.config_dir}/cn=config/olcDatabase=\{*\}{hdb,bdb,mdb}.ldif"].first
+    db_conf_file = Dir["#{node['ca_openldap']['config_dir']}/cn=config/olcDatabase=\{*\}{hdb,bdb,mdb}.ldif"].first
     db_conf_file_init_name_data = File.basename(db_conf_file).match(/{(?<db_index>[[:digit:]]+)}(?<db_backend>[[:alpha:]]+)\.ldif/)
     db_index = db_conf_file_init_name_data['db_index']
     init_db_backend = db_conf_file_init_name_data['db_backend']
-    target_db_backend = node.ca_openldap.db_backend
+    target_db_backend = node['ca_openldap']['db_backend']
     if ! target_db_backend.eql? init_db_backend
       db_conf_file_old = db_conf_file
       db_conf_file = "#{File.dirname(db_conf_file)}/olcDatabase={#{db_index}}#{target_db_backend}.ldif"
@@ -131,21 +131,21 @@ ruby_block "db_backend_config" do
     end
 
     #configure database storage irectory
-    f.search_file_replace_line(/olcDbDirectory:/, "olcDbDirectory: #{node.ca_openldap.db_dir}")
+    f.search_file_replace_line(/olcDbDirectory:/, "olcDbDirectory: #{node['ca_openldap']['db_dir']}")
     
     #configure suffix
-    f.search_file_replace_line(/olcSuffix:/, "olcSuffix: #{node.ca_openldap.basedn}")
+    f.search_file_replace_line(/olcSuffix:/, "olcSuffix: #{node['ca_openldap']['basedn']}")
 
     #configure root dn and root password
     f.search_file_replace_line(/olcRootDN:/, "olcRootDN: #{my_root_dn}")
     f.search_file_delete_line(/olcRootPW:/)
-    password = LDAPUtils.ssha_password(node.ca_openldap.rootpassword)
+    password = LDAPUtils.ssha_password(node['ca_openldap']['rootpassword'])
     f.insert_line_after_match(/olcRootDN:/, "olcRootPW: #{password}")
     
     #configure acl
     f.search_file_delete_line(/olcAccess:/)
     index = 0
-    acls = node.ca_openldap.acls.inject("") do |acum, acl|
+    acls = node['ca_openldap']['acls'].inject("") do |acum, acl|
       acum << "olcAccess: {#{index}}#{acl}\n"
       index+= 1
       acum
