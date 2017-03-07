@@ -58,7 +58,7 @@ Additionally the key file (/etc/pki/tls/private/\<_fqdn_\>.key) is copied to `no
 
 ### PPolicy attributes
 * `node['ca_openldap']['ppolicy_default_config_dn']` - DN where the default ppolicy configuration is stored, relatively to the `node['ca_openldap']['basedn']` (default: `"cn=passwordDefault,ou=policies"`).
-* `node['ca_openldap']['ppolicy_default_config']` - Default ppolicy configuration, supported attributes are defined by section "Object Class Attributes" in slapd-ppolicy(5) (check default value in `attributes/default.rb`)
+* `node['ca_openldap']['ppolicy_default_config']` - Default ppolicy configuration, supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5) (check default value in `attributes/default.rb`)
 
 
 ### Schema attributes
