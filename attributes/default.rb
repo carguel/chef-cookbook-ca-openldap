@@ -178,3 +178,9 @@ default['ca_openldap']['ppolicy_default_config'] = {
 
 # ppolicy overlay parameters
 default['ca_openldap']['ppolicy']['hash_clear_text'] = 'FALSE'
+
+# Array of extra password policies to insert into the LDAP. Each entry shall be an hash with following symbols:
+# - dn: the partial DN of the ppolicy (relative to the base DN, e.g. "cn=myPPolicy,ou=policies")
+# - sn: the ppolicie's SN (e.g. "My password policy")
+# - attrs: an hash gathering ppolicie's config attributes (supported attributes are defined by section "Object Class Attributes" in slapo-ppolicy(5))
+default['ca_openldap']['ppolicy']['extra_ppolicies'] = []

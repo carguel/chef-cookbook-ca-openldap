@@ -59,16 +59,26 @@ execute "ppolicy_overlay" do
   action :nothing
 end
 
-# Add the ppolicy default config into the On Line Configuration
-ruby_block "ppolicy_config" do
-  block do
-    attrs = {
-      objectClass: ["pwdPolicy", "person", "top", "pwdPolicyChecker"],
-      sn: "PPolicy default config"
-    }.merge(node['ca_openldap']['ppolicy_default_config'])
+# Using the On Line Configuration, add:
+# - the ppolicy default config,
+# - any supplementary ppolicy specified within node['ca_openldap']['extra_ppolicies']
+[{
+  dn: node['ca_openldap']['ppolicy_default_config_dn'],
+  sn: "PPolicy default config",
+  attrs: node['ca_openldap']['ppolicy_default_config']
+}]
+.concat(node['ca_openldap']['ppolicy']['extra_ppolicies'])
+.each do |ppolicy|
+  ruby_block "ppolicy_config_#{ppolicy[:dn]}" do
+    block do
+      attrs = {
+        objectClass: ["pwdPolicy", "person", "top", "pwdPolicyChecker"],
+        sn: ppolicy[:sn]
+      }.merge(ppolicy[:attrs])
 
-    ppolicy_default_config_dn = [node['ca_openldap']['ppolicy_default_config_dn'], node['ca_openldap']['basedn']].join(",")
-    ldap.add_or_update_entry(ppolicy_default_config_dn, attrs)
+      ppolicy_config_full_dn = [ppolicy[:dn], node['ca_openldap']['basedn']].join(',')
+      ldap.add_or_update_entry(ppolicy_config_full_dn, attrs)
+    end
+    action :create
   end
-  action :create
 end
