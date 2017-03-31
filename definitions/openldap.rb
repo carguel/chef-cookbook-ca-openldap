@@ -203,8 +203,8 @@ define :private_key_link do
   end
 
   file node['ca_openldap']['tls']['key_file'] do
-    owner "ldap"
+    owner "root"
     group "ldap"
-    mode  0600
+    mode  0640
   end
 end

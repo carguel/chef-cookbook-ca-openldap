@@ -35,9 +35,16 @@ service "slapd" do
   action [:enable, :stop]
 end
 
+# Configure permissions on main directories
 directory node['ca_openldap']['db_dir'] do
   user "ldap"
   group "ldap"
+  mode 0700
+  recursive true
+end
+directory node['ca_openldap']['config_dir'] do
+  user "ldap"
+  group "root"
   mode 0700
   recursive true
 end
@@ -112,6 +119,10 @@ ruby_block "db_backend_config" do
       db_conf_file = "#{File.dirname(db_conf_file)}/olcDatabase={#{db_index}}#{target_db_backend}.ldif"
       File.rename(db_conf_file_old, db_conf_file)
     end
+
+    # configure this file's permissions
+    FileUtils.chown('root', 'ldap', db_conf_file)
+    FileUtils.chmod(0640, db_conf_file)
 
     # open the file
     f = Chef::Util::FileEdit.new(db_conf_file)
