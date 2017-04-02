@@ -28,7 +28,11 @@ module CAOpenldapEntryHelper
 
   # Fully qualify the entry (append the base DN if needed).
   def fq_entry_dn
-    "#{entry_dn},#{basedn}" unless entry_dn.end_with? basedn
+    if entry_dn.end_with? basedn
+      entry_dn
+    else
+      "#{entry_dn},#{basedn}" 
+    end
   end
 
   # Retrieve base DN from cookbook attributes.

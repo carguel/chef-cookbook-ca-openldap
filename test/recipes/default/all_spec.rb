@@ -13,4 +13,5 @@ end
 describe command('slapcat') do
   its(:stdout) { should cmp(/ou=users,dc=example,dc=com/) }
   its(:stdout) { should cmp(/uid=new_entry,ou=users,dc=example,dc=com/) }
+  its(:stdout) { should cmp(/uid=new_entry_2,ou=users,dc=example,dc=com/) }
 end
