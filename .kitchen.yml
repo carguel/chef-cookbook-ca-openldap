@@ -17,24 +17,6 @@ platforms:
   - name: centos-7.3
 
 suites:
-  - name: el6
-    run_list:
-      - recipe[ca_openldap::server]
-      - recipe[ca_openldap::schemas]
-      - recipe[ca_openldap::dit]
-      - recipe[ca_openldap::populate]
-      - recipe[ca_openldap::ppolicy]
-      - recipe[use_entry_resource]
-    excludes:
-      - centos-7.3
-    attributes:
-      ca_openldap:
-        general_configuration_options:
-          olcAllows: "::delete::"
-        populate:
-          update_enable: true
-        tls:
-          enable: "no"
   - name: default
     run_list:
       - recipe[ca_openldap::server]
@@ -43,8 +25,6 @@ suites:
       - recipe[ca_openldap::populate]
       - recipe[ca_openldap::ppolicy]
       - recipe[use_entry_resource]
-    excludes:
-      - centos-6.8
     attributes:
       ca_openldap:
         general_configuration_options:
@@ -53,4 +33,3 @@ suites:
           update_enable: true
         tls:
           enable: "no"
-        slapd_sysconfig_file: "/etc/sysconfig/slapd"

@@ -126,7 +126,12 @@ default['ca_openldap']['config_dir'] = "#{node['ca_openldap']['root_dir']}/slapd
 default['ca_openldap']['schema_dir'] = "#{node['ca_openldap']['root_dir']}/schema"
 
 # Default location of the sysconfig file configuring LDAP daemon
-default['ca_openldap']['slapd_sysconfig_file'] = "/etc/sysconfig/ldap"
+case 
+when node['platform_version'] < '7'
+  default['ca_openldap']['slapd_sysconfig_file'] = "/etc/sysconfig/ldap"
+else
+  default['ca_openldap']['slapd_sysconfig_file'] = "/etc/sysconfig/slapd"
+end
 
 # Enable LDAPI connections (required to load any LDAP schema beside the core.ldif one)
 default['ca_openldap']['enable_ldapi'] = true
