@@ -5,6 +5,8 @@ driver:
   customize:
     memory: 1024
 
+verifier:
+  name: inspec
 
 provisioner:
   name: chef_zero
@@ -22,6 +24,7 @@ suites:
       - recipe[ca_openldap::dit]
       - recipe[ca_openldap::populate]
       - recipe[ca_openldap::ppolicy]
+      - recipe[use_entry_resource]
     excludes:
       - centos-7.3
     attributes:
@@ -39,6 +42,7 @@ suites:
       - recipe[ca_openldap::dit]
       - recipe[ca_openldap::populate]
       - recipe[ca_openldap::ppolicy]
+      - recipe[use_entry_resource]
     excludes:
       - centos-6.8
     attributes:

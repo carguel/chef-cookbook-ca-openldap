@@ -41,6 +41,54 @@ class Chef::Recipe::LDAPUtils
     @ldap = Net::LDAP.new(args)
   end
 
+  # Retrieve an entry given its DN.
+  #
+  # The entry is returned as an Net::LDAP::Entry.
+  #
+  # @parem [String] dn entry DN.
+  def retrieve_entry(dn)
+    entries = @ldap.search(base: dn, scope: Net::LDAP::SearchScope_BaseObject, return_result: true)
+    if entries
+      entries.first
+    end
+  end
+
+  # Retrieve an entry given its DN and return its attributes in a hash.
+  #
+  # The returned hash has the following properties:
+  #   * all keys are symbols,
+  #   * a mono valuated attribute has a scalar value, not an array of a single element,
+  #   * DN and RDN attribute are not included in this hash.
+  #
+  # @param [String] dn entry DN.
+  #
+  def retrieve_entry_attributes(dn)
+    entry = retrieve_entry dn
+    attributes = {}
+
+    if entry
+      rdn_attribute = rdn_attribute(dn)
+
+      entry.each_attribute do |name, value|
+
+        # exclude dn and rdn attributes
+        next if name == :dn or name == rdn_attribute
+
+        # Replace a single element array by the element
+        # so that mono valuated attribute are scalar
+        value = if value.kind_of?(Array) && value.size == 1
+                  value.first
+                else
+                  value
+                end
+
+        # ensure all keys are symbols
+        attributes[name.to_sym] = value
+      end
+    end
+    attributes
+  end
+
   # Add an entry in the directory
   # @param [String] dn the dn of the entry to add
   # @param [Hash] attrs the attributes of the entry
@@ -106,6 +154,13 @@ class Chef::Recipe::LDAPUtils
   def self.first_item(dn) 
     m = dn.match(/^([^=]+)=([^,]+)/)
     {m[1] => m[2]}
+  end
+
+  # Extract the rdn attribute from the given dn.
+  # @param [String] dn The DN.
+  # @return [Symbol] the RDN attribute.
+  def rdn_attribute(dn)
+    Chef::Recipe::LDAPUtils.first_item(dn).keys.first.to_sym
   end
 
   def self.build_dn(*items)

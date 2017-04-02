@@ -224,6 +224,39 @@ Example of `ca_openldap/populate` data bag item:
 
 Configure the PPolicy module.
 
+## Custom Resources
+
+### entry
+
+This resource create or update an entry in LDAP server defined by following attributes:
+ * node['ca\_openldap']['ldap\_server']
+ * node['ca\_openldap']['ldap\_port']
+ * node['ca\_openldap']['rootdn'] and node['ca\_openldap']['basedn'] 
+ * node['ca\_openldap']['rootpassword'] 
+
+#### Actions
+
+ * `create` - Create or update an entry.
+
+#### Properties
+
+ * `entry_dn` - DN of the entry to create or update (resource name).
+ * `attributes` - Entry attributes to set, this hash should not include the RDN attribute.
+
+#### Example
+
+```ruby
+  ca_opendalp_entry "uid=foo,ou=users,dc=example,dc=com" do
+    attributes objectClass: ["top", "posixAccount", "inetOrgPerson"],
+               uidNumber: "22001",
+               cn: "Foo Bar",
+               gidNumber: "22001",
+               sn: "Foo Bar",
+               userPassword: "pa$$word", # should be read from an encrytped data bag item !!
+               homeDirectory: "/home/foo"
+    end
+```
+
 ## TLS support
 
 TLS support is managed by the `server` recipe and configured by the `node['ca_openldap']['tls']['*']` attributes and `node['ca_openldap']['use_existing_certs_and_key']` attribute.
