@@ -25,6 +25,7 @@ begin
 rescue Exception => e
   chef_gem "net-ldap" do
     source node['ca_openldap']['netldap_gem_path'] if node['ca_openldap']['netldap_gem_path']
+    compile_time true
   end
   require 'net/ldap'
 end
@@ -35,6 +36,7 @@ begin
 rescue Exception => e
   chef_gem "ssha" do
     source node['ca_openldap']['ssha_gem_path'] if node['ca_openldap']['ssha_gem_path']
+    compile_time true
   end
   require 'ssha'
 end
