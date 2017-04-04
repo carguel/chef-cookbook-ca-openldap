@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe 'ca_openldap::default'
+include_recipe 'ca_openldap::_install_gems'
 
 class Chef::Recipe
     include CAOpenldap

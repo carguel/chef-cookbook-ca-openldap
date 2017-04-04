@@ -17,8 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe 'ca_openldap::default'
-include_recipe 'ca_openldap::server'
+include_recipe 'ca_openldap::_install_gems'
 
 schema_dir = node['ca_openldap']['schema_dir']
 ldif_dir = "/tmp/ldif_schemas"

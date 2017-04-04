@@ -17,15 +17,13 @@
 # limitations under the License.
 #
 
-include_recipe 'ca_openldap::default'
+include_recipe 'ca_openldap::_install_gems'
 
 class Chef::Recipe
   include CAOpenldap
 end
 
 require 'net/ldap'
-
-include_recipe 'ca_openldap::default'
 
 my_root_dn = build_rootdn()
 tls_enable = tls_enable?(node['ca_openldap']['tls']['enable'])
