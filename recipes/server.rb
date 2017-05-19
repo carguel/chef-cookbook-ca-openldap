@@ -113,16 +113,8 @@ ruby_block "bdb_config" do
     f.search_file_delete_line(/olcLogLevel:/)
     f.insert_line_after_match(/olcRootPW:/, "olcLogLevel: #{node.ca_openldap.ldap_log_level}")
     
-    #configure acl
+    #delete acl lines, will be added again in recipe acl
     f.search_file_delete_line(/olcAccess:/)
-    index = 0
-    acls = node.ca_openldap.acls.inject("") do |acum, acl|
-      acum << "olcAccess: {#{index}}#{acl}\n"
-      index+= 1
-      acum
-    end
-    f.insert_line_after_match(/olcLogLevel:/, acls)
-
     f.write_file
   end
   action :create
