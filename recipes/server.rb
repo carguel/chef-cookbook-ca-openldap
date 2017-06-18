@@ -68,23 +68,16 @@ ca_openldap_general_configuration "global_options" do
 end
 
 # TLS connection configuration
-(use_ldap, use_ldaps) = use_ldap_or_ldaps?(node['ca_openldap']['tls']['enable'].to_sym)
-ldap_port = node['ca_openldap']['default_ports']['ldap']
-ldaps_port = node['ca_openldap']['default_ports']['ldaps']
-
-urls = []
-urls << "ldapi:///" if node['ca_openldap']['enable_ldapi']
-urls << "ldap://*:#{ldap_port}" if use_ldap == "yes"
-urls << "ldaps://*:#{ldaps_port}" if use_ldaps == "yes"
-Chef::Log.info("SLAPD_URLS will be configured with: #{urls.join " "}")
+(_, use_ldaps) = use_ldap_or_ldaps?(node.ca_openldap.tls.enable.to_sym)
 
 ruby_block "tls_connection_configuration" do
+  extend Chef::Recipe::CAOpenldap
   block do
     f = Chef::Util::FileEdit.new(node['ca_openldap']['slapd_sysconfig_file'])
     f.search_file_replace_line(/SLAPD_LDAP=/, "SLAPD_LDAP=no")
     f.search_file_replace_line(/SLAPD_LDAPS=/, "SLAPD_LDAPS=no")
-    f.search_file_replace_line(/SLAPD_LDAPI=/, "SLAPD_LDAPI=yes")
-    f.search_file_replace_line(/SLAPD_URLS=/, "SLAPD_URLS=\"#{urls.join " "}\"")
+    f.search_file_replace_line(/SLAPD_LDAPI=/, "SLAPD_LDAPI=no")
+    f.search_file_replace_line(/SLAPD_URLS=/, "SLAPD_URLS=\"#{ slapd_listen_urls }\"")
     f.write_file
   end
 end

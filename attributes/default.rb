@@ -23,6 +23,9 @@ default['ca_openldap']['basedn'] = "dc=example,dc=com"
 # Default openldap server
 default['ca_openldap']['ldap_server'] = "localhost"
 
+# slapd listen addresses (can be an IP address or FQDN)
+default['ca_openldap']['slapd_listen_addresses'] = ['*']
+
 # Openldap listening port (those attributes configure the slapd listening ports)
 default['ca_openldap']['default_ports']['ldap'] = "389"
 default['ca_openldap']['default_ports']['ldaps'] = "636"

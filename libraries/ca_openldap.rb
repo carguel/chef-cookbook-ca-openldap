@@ -88,4 +88,36 @@ module Chef::Recipe::CAOpenldap
     result = use_ldap_or_ldaps? tls_mode
     result.last == "yes"
   end
+
+  # Build the SLAPD sysconfig string that defines the URLS to listen to.
+  #
+  # It is based on 
+  #  * node['ca_openldap']['tls']['enable'] : which protocol to listen to ?
+  #  * node['ca_openldap']['slapd_listen_addresses'] : which IP/FQDN to listen to for LDAP/LDAPS protocol ?
+  #  * node['ca_openldap']['enable_ldapi'] : Listen to LDAPI ?
+  #
+  #  @return [String] List of listen URLs
+  def slapd_listen_urls
+    urls = []
+
+    (use_ldap, use_ldaps) = use_ldap_or_ldaps?(node['ca_openldap']['tls']['enable'].to_sym)
+    ldap_port = node['ca_openldap']['default_ports']['ldap']
+    ldaps_port = node['ca_openldap']['default_ports']['ldaps']
+
+    urls << "ldapi:///" if node['ca_openldap']['enable_ldapi']
+
+    if use_ldap == 'yes'
+      node['ca_openldap']['slapd_listen_addresses'].each do |listen_adress|
+        urls << "ldap://#{ listen_adress }:#{ ldap_port }"
+      end
+    end
+
+    if use_ldaps == 'yes'
+      node['ca_openldap']['slapd_listen_addresses'].each do |listen_adress|
+        urls << "ldaps://#{ listen_adress }:#{ ldaps_port }"
+      end
+    end
+
+    urls.join " "
+  end
 end

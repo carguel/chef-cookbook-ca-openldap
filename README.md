@@ -43,6 +43,8 @@ Debian and Ubuntu are planned but currently not supported.
 * `node['ca_openldap']['acls']` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
 * `node['ca_openldap']['default_ports']['ldap']` - Port of the 'clear' LDAP socket, used only when ca\_openldap.tls.enable is to `:no` or `:yes`
 * `node['ca_openldap']['defaut_ports']['ldaps']` - Port of the TLS socket, used only when ca\_openldap.tls.enable is set to `:yes` or `:exclusive`
+* `node['ca_openldap']['enable_ldapi'] - Enable LDAPI access (default `true`).
+* `node['ca_openldap']['slapd_listen_addresses'] - IP addresses or FQDN to listen to for LDAP/LDAPS accesses (default : `['*']` - listen to all known addresses)
 * `node['ca_openldap']['tls']['enable']` - Configure the TLS access support, accepted values are (default `:exclusive`): 
     * `:no` TLS access is not allowed
     * `:yes` both clear and TLS accesses are allowed
