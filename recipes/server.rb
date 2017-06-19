@@ -108,7 +108,7 @@ ruby_block "db_backend_config" do
     init_db_backend = db_conf_file_init_name_data['db_backend']
     target_db_backend = node['ca_openldap']['db_backend']
 
-    tmp_conf_file = "/tmp/slapd_db.conf"
+    tmp_conf_file = "#{db_conf_file}.update"
 
 
     if ! target_db_backend.eql? init_db_backend
