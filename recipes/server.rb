@@ -107,6 +107,10 @@ ruby_block "db_backend_config" do
     db_index = db_conf_file_init_name_data['db_index']
     init_db_backend = db_conf_file_init_name_data['db_backend']
     target_db_backend = node['ca_openldap']['db_backend']
+
+    tmp_conf_file = "/tmp/slapd_db.conf"
+
+
     if ! target_db_backend.eql? init_db_backend
       db_conf_file_old = db_conf_file
       db_conf_file = "#{File.dirname(db_conf_file)}/olcDatabase={#{db_index}}#{target_db_backend}.ldif"
@@ -117,8 +121,15 @@ ruby_block "db_backend_config" do
     FileUtils.chown('root', 'ldap', db_conf_file)
     FileUtils.chmod(0640, db_conf_file)
 
-    # open the file
-    f = Chef::Util::FileEdit.new(db_conf_file)
+    # open the db conf file and create a new file with only single-line definitions.
+    full_content = File.read(db_conf_file)
+    full_content.gsub!(/\n /, "")
+
+    File.open(tmp_conf_file, "w") do |file|
+      file.write full_content
+    end
+    
+    f = Chef::Util::FileEdit.new(tmp_conf_file)
     
     # if the db backend chosen isn't the default one, modify the file accordingly
     if ! target_db_backend.eql? init_db_backend
@@ -157,6 +168,8 @@ ruby_block "db_backend_config" do
     f.insert_line_after_match(/olcRootPW:/, acls)
 
     f.write_file
+
+    File.rename(tmp_conf_file, db_conf_file)
   end
   action :create
   notifies :start, "service[slapd]", :immediately

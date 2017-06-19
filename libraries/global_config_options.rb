@@ -6,11 +6,18 @@ module CaOpenldap
     def initialize(path="/etc/openldap/slapd.d/cn=config.ldif")
       @path = path
 
-      content = File.read(path).split(/\n/)
-      olc_lines = content.grep /^olc/
+      content = read_lines_from_file @path
+
+      puts ">>>>>>>>> CONTENT"
+      puts content
+
+      olc_lines = content.grep(/^olc/)
       @options = olc_lines.inject({}) do |hash, line|
         insert_option_to_hash(hash, line)
       end
+
+      puts ">>>>>>>>>>>>>>> OPTIONS"
+      p @options
     end
 
     def set(name, value)
@@ -26,7 +33,9 @@ module CaOpenldap
       current = {}
 
       File.open(updated, "w") do |output|
-        File.read(@path).split(/\n/).each do |line|
+
+        content = read_lines_from_file @path
+        content.each do |line|
 
           # Output options just before the structuralObjectClass line.
           if line.start_with? 'structuralObjectClass'
@@ -58,9 +67,22 @@ module CaOpenldap
     private 
 
     def insert_option_to_hash(hash, line)
-      k, v = line.split(':')
+      k, v = line.split(':', 2)
       hash[k.strip] = v.strip
       hash
+    end
+
+    # Read lines from slapd config file, joining
+    # multi-line definitions as single-ligne definitions.
+    # @param [Array<String>] List of lines found in config file.
+    def read_lines_from_file(file_path)
+      full_content = File.read(file_path)
+
+      # join multi-lines
+      full_content.gsub!(/\n /, "")
+
+      # Split lines
+      full_content.split(/\n/)
     end
 
   end
