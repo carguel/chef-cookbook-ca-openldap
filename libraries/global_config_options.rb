@@ -8,16 +8,10 @@ module CaOpenldap
 
       content = read_lines_from_file @path
 
-      puts ">>>>>>>>> CONTENT"
-      puts content
-
       olc_lines = content.grep(/^olc/)
       @options = olc_lines.inject({}) do |hash, line|
         insert_option_to_hash(hash, line)
       end
-
-      puts ">>>>>>>>>>>>>>> OPTIONS"
-      p @options
     end
 
     def set(name, value)
@@ -54,7 +48,10 @@ module CaOpenldap
         end
       end
 
+      # Update the file content while preserving its UID/GID
+      old_file_stats = File.stat(@path)
       File.rename(updated, @path)
+      FileUtils.chown(old_file_stats.uid, old_file_stats.gid, @path)
 
       # return true if changes detected.
       @options != current
