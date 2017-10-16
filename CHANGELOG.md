@@ -6,6 +6,7 @@ This file is used to list changes made in each version of ca_openldap.
  * Support RHEl/CentOS 7
  * Add custom resource entry
  * Remove warnings raised by Chef 12
+ * Support configuring populate data bag item name
 
 ## 0.5.2
  * Fix #16: Log message should filter password value.

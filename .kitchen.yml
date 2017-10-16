@@ -29,6 +29,7 @@ suites:
           olcAllows: "::delete::"
         populate:
           update_enable: true
+          databag_item_name: ca_openldap:populate
         slapd_listen_addresses:
           - localhost      
         tls:

@@ -119,6 +119,9 @@ default['ca_openldap']['populate']['update_enable'] = false
 # is enabled.
 default['ca_openldap']['populate']['attributes_to_ignore'] = []
 
+# Name of the data bag item from where populate data are read
+default['ca_openldap']['populate']['databag_item_name'] ="ca_openldap:populate"
+
 # Root directory of the openldap configuration
 default['ca_openldap']['root_dir'] = "/etc/openldap"
 

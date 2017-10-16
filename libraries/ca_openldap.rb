@@ -22,7 +22,9 @@ module Chef::Recipe::CAOpenldap
   
   def parse_populate_data_bag_item
 
-    config = data_bag_item('ca_openldap', 'populate')
+    data_bag, item = populate_data_bag_item_name
+
+    config = data_bag_item(data_bag, item)
     base = config['base']
 
     config['branches'].each do |branch|
@@ -119,5 +121,18 @@ module Chef::Recipe::CAOpenldap
     end
 
     urls.join " "
+  end
+
+  private
+
+  # Extract data bag and data bag item name for populate from attribute.
+  def populate_data_bag_item_name
+    data_bag, item = node['ca_openldap']['populate']['databag_item_name'].split ":"
+
+    if data_bag == nil or item == nil 
+      raise "Attribute node['ca_openldap']['populate']['databag_item_name'] is mal formatted, expected <datab_bag>:<item>, example ca_openldap:populate"
+    end 
+
+    return [data_bag, item]
   end
 end
