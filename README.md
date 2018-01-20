@@ -58,7 +58,7 @@ Debian and Ubuntu are planned but currently not supported.
 Additionally the key file (/etc/pki/tls/private/\<_fqdn_\>.key) is copied to `node['ca_openldap']['tls']['key_file']`.
 
 ### ACL attributes
-* `node.ca_openldap.acls` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
+* `node['ca_openldap']['acls']` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
 
 ### PPolicy attributes
 * `node['ca_openldap']['ppolicy_default_config_dn']` - DN where the default ppolicy configuration is stored, relatively to the `node['ca_openldap']['basedn']` (default: `"cn=passwordDefault,ou=policies"`).

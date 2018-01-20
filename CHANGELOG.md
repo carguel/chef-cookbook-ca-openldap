@@ -7,7 +7,7 @@ This file is used to list changes made in each version of ca_openldap.
  * Add custom resource 'entry' to create an entry in LDAP server.
  * Remove warnings raised by Chef 12
  * Support configuring populate data bag item name
- * Create new recipe acl in order to configure acl on specific attributes after importing related schemas with schema recipe
+ * Create new recipe 'acl' to set up ACLs (ACL are no longer set by 'server' recipe). This allows to configure ACLs on specific LDAP attributes after importing related schemas with 'schema' recipe. 
  * Fix minor issues
 
 ## 0.5.2
