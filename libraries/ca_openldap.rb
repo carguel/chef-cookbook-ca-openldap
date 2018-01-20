@@ -123,7 +123,43 @@ module Chef::Recipe::CAOpenldap
     urls.join " "
   end
 
+  # Retrieve initial slapd DB configuration file path.
+  def slapd_init_db_config_file
+    Dir["#{node['ca_openldap']['config_dir']}/cn=config/olcDatabase=\{*\}{hdb,bdb,mdb}.ldif"].first
+  end
+
+  # Retrieve initial slapd DB backend.
+  def slapd_init_db_backend
+    slapd_init_db_path_matcher[2]
+  end
+
+  # Retrieve initial slapd DB configuration index.
+  def slapd_init_db_index
+    slapd_init_db_path_matcher[1]
+  end
+
+  # Retrieve actual slapd DB configuration file path.
+  def slapd_db_config_file
+    Dir["#{node['ca_openldap']['config_dir']}/cn=config/olcDatabase=\{*\}{#{ node['ca_openldap']['db_backend'] }}.ldif"].first
+  end
+
+  # Retrieve actual slapd DB configuration index.
+  def slapd_db_config_index
+    ::File.basename(slapd_db_config_file).match(/{(\d+)}#{ node['ca_openldap']['db_backend'] }\.ldif/)[1]
+  end
+
   private
+
+  # Apply regular expression to slapd DB coonfiguration file name in order
+  # to retrieve :
+  # match group 1 : index
+  # match group 2 : backend
+  #
+  # @return [Array<String>] The related matcher.
+  def slapd_init_db_path_matcher
+    basename = ::File.basename(slapd_init_db_config_file)
+    basename.match(/\{(\d+)\}(hdb|bdb|mdb)\.ldif/) or raise "#{ basename } does not match expected slapd DB configuration file. Check slapd is properly installed."
+  end
 
   # Extract data bag and data bag item name for populate from attribute.
   def populate_data_bag_item_name

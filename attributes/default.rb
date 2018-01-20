@@ -40,7 +40,12 @@ default['ca_openldap']['db_dir'] = "/var/lib/ldap"
 # Type of OpenLDAP database backend used
 # Supported database backends are: hdb, bdb, mdb
 # Note: it is assumed that the database backend object class name looks like: "olc[Backend]Config"
-default['ca_openldap']['db_backend'] = "mdb"
+default['ca_openldap']['db_backend'] = 
+    if node['platform_version'] >= "6" and node['platform_version'] < "7"
+        "bdb"
+    elsif node['platform_version'] > "7"
+        "mdb"
+    end
 
 # Default rootDN (relative to the basedn)
 default['ca_openldap']['rootdn'] = "cn=Manager"
