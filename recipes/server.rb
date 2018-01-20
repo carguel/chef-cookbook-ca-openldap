@@ -140,6 +140,9 @@ ruby_block "db_backend_config" do
         db_conf_file = init_db_conf_file
     end
 
+    # remove CRC comment
+    f.search_file_delete_line(/# CRC/)
+
     #configure database storage irectory
     f.search_file_replace_line(/olcDbDirectory:/, "olcDbDirectory: #{node['ca_openldap']['db_dir']}")
     

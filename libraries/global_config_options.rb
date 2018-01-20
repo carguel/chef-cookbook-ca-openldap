@@ -31,6 +31,9 @@ module CaOpenldap
         content = read_lines_from_file @path
         content.each do |line|
 
+          # Remove CRC comment
+          next if line.start_with? '# CRC'
+
           # Output options just before the structuralObjectClass line.
           if line.start_with? 'structuralObjectClass'
             @options.each do |k, v|
