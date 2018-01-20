@@ -2,6 +2,14 @@
 
 This file is used to list changes made in each version of ca_openldap.
 
+## 0.6.0
+ * Support RHEl/CentOS 7
+ * Add custom resource 'entry' to create an entry in LDAP server.
+ * Remove warnings raised by Chef 12
+ * Support configuring populate data bag item name
+ * Create new recipe acl in order to configure acl on specific attributes after importing related schemas with schema recipe
+ * Fix minor issues
+
 ## 0.5.2
  * Fix #16: Log message should filter password value.
 

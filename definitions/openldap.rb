@@ -18,7 +18,7 @@
 #
 
 # Generate LDIF schemas related to the schema definitions included in a directory.
-define :ldif_schemas do
+define :ldif_additional_schemas do
   ldif_dir = params[:ldif_dir]
   schema_dir = params[:schema_dir]
   import_file = "#{ldif_dir}/import_schemas.conf"
@@ -34,7 +34,7 @@ define :ldif_schemas do
   ruby_block "schema_import_ldif" do
     block do
       File.open(import_file, "w") do |f|
-        node.ca_openldap.additional_schemas.each do |schema|
+        node['ca_openldap']['additional_schemas'].each do |schema|
           f.puts "include #{schema_dir}/#{schema}.schema"
         end
       end
@@ -44,15 +44,15 @@ define :ldif_schemas do
   end
 
   # Convert the schemas to LDIF
-  execute "ldif_schemas" do
+  execute "ldif_additional_schemas" do
     command "slaptest -f #{import_file} -F #{ldif_dir}"
     action :run
   end
 end
 
 
-# Add a schema defined as LDIF into the local LDAP instance.
-define :ldap_schema do
+# Add a schema defined as LDIF (previously processed by :ldif_additional_schemas) into the local LDAP instance.
+define :ldap_additional_schema do
   ldif_dir = params[:ldif_dir]
   schema = params[:schema]
 
@@ -75,15 +75,25 @@ define :ldap_schema do
   end
 
   # add the updated LDIF into the local LDAP instance
-  ruby_block "imported_schema_#{schema}" do
+  load_ldap_schema do
+    schema_name schema
+    schema_path ldap_config.schema_path(ldif_dir, schema)
+  end
+end
+
+# Load some LDAP schema (which name and path are provided as entry parameters) to LDAP database
+define :load_ldap_schema do
+  schema_name = params[:schema_name]
+  schema_path = params[:schema_path]
+
+  ruby_block "load_schema_#{schema_name}" do
     block do
-      ldif = ldap_config.schema_path(ldif_dir, schema)
-      system "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config < #{ldif}"
+      system "ldapadd -Y EXTERNAL -H ldapi:/// -D cn=admin,cn=config < #{schema_path}"
     end
     action :create
     not_if do
       lcu = Chef::Recipe::LDAPConfigUtils.new
-      lcu.contains?(base: "cn=schema,cn=config", filter: "'(cn=*#{schema})'")
+      lcu.contains?(base: "cn=schema,cn=config", filter: "'(cn=*#{schema_name})'")
     end
   end
 end
@@ -144,18 +154,18 @@ define :openldap_module do
   end
 end
 
-# Create a link under node.ca_openldap.tls.cert_file which points to the server certificate under
+# Create a link under node['ca_openldap']['tls']['cert_file'] which points to the server certificate under
 # "/etc/pki/tls/certs/#{node['fqdn']}.pem".
 #
 # This is only a wrapper over the link resource for semantic purpose.
 # This definition does not depend on any attribute.
 define :server_certificate_link do
-  link node.ca_openldap.tls.cert_file do
+  link node['ca_openldap']['tls']['cert_file'] do
     to "/etc/pki/tls/certs/#{node['fqdn']}.pem"
   end
 end
 
-# Create a link under node.ca_openldap.tls.cacert_path which points to the CA Certificate under 
+# Create a link under node['ca_openldap']['tls']['cacert_path'] which points to the CA Certificate under 
 # "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt".
 #
 # The name of the created link is the X.509 hash with the extension ".0" in order to comply with what it is
@@ -163,7 +173,7 @@ end
 # This definition does not depend on any attribute.
 define :ca_certificate_link do
 
-  directory node.ca_openldap.tls.cacert_path do
+  directory node['ca_openldap']['tls']['cacert_path'] do
     mode 0755
     owner "root"
     group "root"
@@ -172,14 +182,14 @@ define :ca_certificate_link do
   ruby_block "ca_certificate_link" do
     block do
       ca_cert = "/etc/pki/tls/certs/#{node['hostname']}-bundle.crt"
-      link_name = File.join(node.ca_openldap.tls.cacert_path, `openssl x509 -hash -noout -in #{ca_cert}`.chomp + ".0")
+      link_name = File.join(node['ca_openldap']['tls']['cacert_path'], `openssl x509 -hash -noout -in #{ca_cert}`.chomp + ".0")
       FileUtils.ln_s(ca_cert, link_name, force: true)
     end
     action :create
   end
 end
 
-# Create a link under node.ca_openldap.tls.key_file which points to the private key file under
+# Create a link under node['ca_openldap']['tls']['key_file'] which points to the private key file under
 # "/etc/pki/private/#{node['fqdn']}.key.
 #
 # This definition does not depend on any attribute.
@@ -187,14 +197,14 @@ define :private_key_link do
 
   # We create a hardlink in order to be able 
   # to set a different owner, group and mode
-  link node.ca_openldap.tls.key_file do
+  link node['ca_openldap']['tls']['key_file'] do
     to "/etc/pki/tls/private/#{node['fqdn']}.key"
     link_type :hard
   end
 
-  file node.ca_openldap.tls.key_file do
-    owner "ldap"
+  file node['ca_openldap']['tls']['key_file'] do
+    owner "root"
     group "ldap"
-    mode  0600
+    mode  0640
   end
 end

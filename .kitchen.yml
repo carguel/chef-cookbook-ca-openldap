@@ -1,31 +1,37 @@
 ---
 driver:
   name: vagrant
-  require_chef_omnibus: true
-  customize:
-    memory: 1024
+  require_chef_omnibus: 12.19.36
 
+verifier:
+  name: inspec
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
+  log_level: info
 
 platforms:
-  - name: centos-6.5
-    driver:
-      box: opscode-centos-6.5
+  - name: centos-6.8
+  - name: centos-7.3
 
 suites:
   - name: default
     run_list:
       - recipe[ca_openldap::server]
+      - recipe[ca_openldap::schemas]
+      - recipe[ca_openldap::acl]
       - recipe[ca_openldap::dit]
       - recipe[ca_openldap::populate]
       - recipe[ca_openldap::ppolicy]
+      - recipe[use_entry_resource]
     attributes:
       ca_openldap:
         general_configuration_options:
           olcAllows: "::delete::"
         populate:
-            update_enable: true
+          update_enable: true
+          databag_item_name: ca_openldap:populate
+        slapd_listen_addresses:
+          - localhost      
         tls:
-            enable: "no"
+          enable: "no"

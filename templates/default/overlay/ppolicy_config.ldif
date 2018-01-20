@@ -1,4 +1,4 @@
-dn: cn=passwordDefault,ou=policies,<%=node.ca_openldap.basedn%>
+dn: cn=passwordDefault,ou=policies,<%=node['ca_openldap']['basedn']%>
 objectClass: pwdPolicy
 objectClass: person
 objectClass: top

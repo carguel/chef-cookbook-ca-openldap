@@ -21,14 +21,14 @@ class Chef::Recipe
     include CAOpenldap
 end
 
-lu = LDAPUtils.new(node.ca_openldap.ldap_server, 
-                   node.ca_openldap.ldap_port, 
+lu = LDAPUtils.new(node['ca_openldap']['ldap_server'], 
+                   node['ca_openldap']['ldap_port'], 
                    build_rootdn(), 
-                   node.ca_openldap.rootpassword,
-                   tls_enable?(node.ca_openldap.tls.enable)
+                   node['ca_openldap']['rootpassword'],
+                   tls_enable?(node['ca_openldap']['tls']['enable'])
                   )
 
-update_enable = node.ca_openldap.populate.update_enable
+update_enable = node['ca_openldap']['populate']['update_enable']
 
 parse_populate_data_bag_item do |dn, attrs|
   ruby_block "add_entry_#{dn}" do

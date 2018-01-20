@@ -16,3 +16,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# 
+# Ensure GEM dependencies are available
+#
+begin
+  require 'net/ldap'
+rescue Exception => e
+  chef_gem "net-ldap" do
+    source node['ca_openldap']['netldap_gem_path'] if node['ca_openldap']['netldap_gem_path']
+    compile_time true
+  end
+  require 'net/ldap'
+end
+
+
+begin
+  require 'ssha'
+rescue Exception => e
+  chef_gem "ssha" do
+    source node['ca_openldap']['ssha_gem_path'] if node['ca_openldap']['ssha_gem_path']
+    compile_time true
+  end
+  require 'ssha'
+end

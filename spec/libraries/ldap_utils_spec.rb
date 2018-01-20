@@ -57,7 +57,7 @@ class Chef::Recipe
         end
       end
 
-      context "entry already exists" do
+      context "entry exists" do
         let(:search_result) { ["found"] }
 
         it "does not add the entry through the NET::Ldap instance" do
@@ -72,7 +72,7 @@ class Chef::Recipe
         allow(ldap).to receive(:search).with(base: dn_to_add, scope: Net::LDAP::SearchScope_BaseObject, return_result: true).and_return([attrs])
       end
 
-      context "entry already exist" do
+      context "entry exist" do
         context "some attributes are modified" do
           let(:new_password) { 'new_password' }
           let(:updated_attrs) do
@@ -119,6 +119,90 @@ class Chef::Recipe
             expect(ldap).not_to receive(:modify)
             subject.add_or_update_entry(dn_to_add, attrs)
           end
+        end
+      end
+    end
+
+    describe "#retrieve_entry" do
+      let(:dn_to_retrieve) { 'cn=user,dc=example,dc=com' }
+
+      context "entry already exists" do
+        before(:each) do
+          allow(ldap).to receive(:search).with(base: dn_to_retrieve, scope: Net::LDAP::SearchScope_BaseObject, return_result: true).and_return([attrs])
+        end
+
+        it "returns the entry as returned by the Net::LDAP.search method." do
+          expect(subject.retrieve_entry(dn_to_retrieve)).to eq attrs
+        end
+      end
+
+      context "entry does not exist" do
+        before(:each) do
+          allow(ldap).to receive(:search).with(base: dn_to_retrieve, scope: Net::LDAP::SearchScope_BaseObject, return_result: true).and_return(nil)
+        end
+        it "returns nil" do
+          expect(subject.retrieve_entry(dn_to_retrieve)).to be_nil
+        end
+      end
+    end
+
+    describe "#retrieve_entry_attributes" do
+      let(:dn_to_retrieve) { 'cn=user,dc=example,dc=com' }
+
+      # Build the rdn attribute from the dn
+      let(:rdn_attribute) { dn_to_retrieve.split(',').first.split('=').first }
+
+      # The complete entry description as it should be defined in LDAP.
+      let(:entry_description) { {dn: dn_to_retrieve, cn: ['user'], userPassword: ['guess_me'], description: ['description']} }
+
+      # Entry that is part of the Net::LDAP.search returned list.
+      let(:entry_mock) { double }
+
+      # Object returned by the Net::LDAP.search method.
+      let(:search_result) { [entry_mock] }
+      
+      # Expected returned object by retrieve_entry_attributes method.
+      let(:expected_result) { {userPassword: 'guess_me', description: 'description'} }
+
+      before(:each) do
+        allow(ldap).to receive(:search).with(base: dn_to_retrieve, scope: Net::LDAP::SearchScope_BaseObject, return_result: true).and_return(search_result)
+      end
+
+      context "entry already exists" do
+        before(:each) do
+          # Mock the behaviour of the Net::LDAP API.
+          # The Net::LDAP::Entry.each_attribute yields a key/value pair
+          # related to each attribute of the entry.
+          #
+          # The following dynamically builds a receiver description
+          # based on the entry_description. For each attribute of the entry, the 
+          # each_attribute method shall yield the related key/value pair.
+          receiver_description = entry_description.inject(receive(:each_attribute)) do |r, pair|
+            r.and_yield(pair.first, pair.last)
+          end
+
+          #
+          allow(entry_mock).to receiver_description
+        end
+
+        it "returns the entry attributes as a Hash" do
+          expect(subject.retrieve_entry_attributes(dn_to_retrieve)).to eq expected_result
+        end
+
+        it "does not include the DN in the the returned Hash" do
+          expect(subject.retrieve_entry_attributes(dn_to_retrieve)).not_to have_key(:dn)
+        end
+
+        it "does not include the rdn attribute in the returned Hash" do
+          expect(subject.retrieve_entry_attributes(dn_to_retrieve)).not_to have_key(rdn_attribute)
+        end
+      end
+
+      context "entry does not exist" do
+        let(:search_result) { nil }
+
+        it "returns nil" do
+          expect(subject.retrieve_entry(dn_to_retrieve)).to be nil
         end
       end
     end
