@@ -66,7 +66,7 @@ ca_openldap_general_configuration "global_options" do
 end
 
 # TLS connection configuration
-(_, use_ldaps) = use_ldap_or_ldaps?(node.ca_openldap.tls.enable.to_sym)
+(_, use_ldaps) = use_ldap_or_ldaps?(node['ca_openldap']['tls']['enable'].to_sym)
 
 ruby_block "tls_connection_configuration" do
   extend Chef::Recipe::CAOpenldap
@@ -98,15 +98,19 @@ end
 my_root_dn = build_rootdn
 ruby_block "db_backend_config" do
   block do
-    # Compute relevant variables
-    db_conf_file = Dir["#{node['ca_openldap']['config_dir']}/cn=config/olcDatabase=\{*\}{hdb,bdb,mdb}.ldif"].first
-    db_index, init_db_backend = File.basename(db_conf_file).match(/{([[:digit:]]+)}([[:alpha:]]+)\.ldif/).to_a.slice(1..-1)
+    extend CAOpenldap
+
+    # Init relevant variables
+    init_db_conf_file = slapd_init_db_config_file
+    init_db_backend = slapd_init_db_backend
+    init_db_index = slapd_init_db_index
+
     target_db_backend = node['ca_openldap']['db_backend']
 
     # open the db conf file and create a new file with only single-line definitions.
-    tmp_conf_file = "#{db_conf_file}.update"
+    tmp_conf_file = "#{init_db_conf_file}.update"
 
-    full_content = File.read(db_conf_file)
+    full_content = File.read(init_db_conf_file)
     full_content.gsub!(/\n /, "")
 
     File.open(tmp_conf_file, "w") do |file|
@@ -118,13 +122,13 @@ ruby_block "db_backend_config" do
     
     if ! target_db_backend.eql? init_db_backend
       # rename db backend conf file according to the chosen backend
-      db_conf_file_old = db_conf_file
-      db_conf_file = "#{File.dirname(db_conf_file)}/olcDatabase={#{db_index}}#{target_db_backend}.ldif"
+      db_conf_file_old = init_db_conf_file
+      db_conf_file = "#{File.dirname(init_db_conf_file)}/olcDatabase={#{init_db_index}}#{target_db_backend}.ldif"
       File.rename(db_conf_file_old, db_conf_file)
 
       #configure database
-      f.search_file_replace_line(/dn:/, "dn: olcDatabase={#{db_index}}#{target_db_backend}")
-      f.search_file_replace_line(/olcDatabase:/, "olcDatabase: {#{db_index}}#{target_db_backend}")
+      f.search_file_replace_line(/dn:/, "dn: olcDatabase={#{init_db_index}}#{target_db_backend}")
+      f.search_file_replace_line(/olcDatabase:/, "olcDatabase: {#{init_db_index}}#{target_db_backend}")
 
       #configure database class
       upFirstLetter = ->(string) { string.slice(0,1).capitalize + string.slice(1..-1) }
@@ -132,6 +136,8 @@ ruby_block "db_backend_config" do
       new_db_object_class = 'olc' + upFirstLetter.call(target_db_backend) + 'Config'
       f.search_file_replace_line(/objectClass:[[:blank:]]*#{old_db_object_class}/, "objectClass: #{new_db_object_class}")
       f.search_file_replace_line(/structuralObjectClass:/, "structuralObjectClass: #{new_db_object_class}")
+    else
+        db_conf_file = init_db_conf_file
     end
 
     #configure database storage irectory
@@ -153,6 +159,9 @@ ruby_block "db_backend_config" do
     File.rename(tmp_conf_file, db_conf_file)
     FileUtils.chown('root', 'ldap', db_conf_file)
     FileUtils.chmod(0640, db_conf_file)
+
+    # Remove backup file created by FileEdit.
+    File.delete("#{ tmp_conf_file }.old")
   end
   action :create
   notifies :start, "service[slapd]", :immediately

@@ -17,29 +17,51 @@
 # limitations under the License.
 #
 
-# Enable slapd service and stop it in order to complete its configuration
-service "slapd" do
-  action [:enable, :stop]
+# Configure ACL in the slapd DB configuration file.
+#
+
+tmp_slapd_config =  File.join(Chef::Config['file_cache_path'], 'slapd_db_config.ldif')
+
+# Copy actual slapd DB config file to a temporary file
+file tmp_slapd_config do
+  extend CAOpenldap
+  content lazy { File.read slapd_db_config_file }
 end
 
-# Configure the base DN, the root DN and its password
-my_root_dn = build_rootdn
+# Update the content of the temporary file
+# with expected ACL.
 ruby_block "acl_config" do
   block do
-    slapd_conf_file = '/etc/openldap/slapd.d/cn=config/olcDatabase={2}bdb.ldif'
+    extend CAOpenldap
+
+    slapd_conf_file = tmp_slapd_config
+
     #configure acl
     f = Chef::Util::FileEdit.new(slapd_conf_file)
     f.search_file_delete_line(/olcAccess:/)
     index = 0
-    acls = node.ca_openldap.acls.inject("") do |acum, acl|
+    acls = node['ca_openldap']['acls'].inject("") do |acum, acl|
       acum << "olcAccess: {#{index}}#{acl}\n"
       index+= 1
       acum
     end
-    f.insert_line_after_match(/olcLogLevel:/, acls)
+    f.insert_line_after_match(/olcRootPW:/, acls)
 
     f.write_file
+
+    # Remove FileEdit backup file.
+    File.delete("#{ tmp_slapd_config }.old")
+
   end
   action :create
-  notifies :start, "service[slapd]", :immediately
+  notifies :delete, "file[#{ tmp_slapd_config }]"
+end
+
+# Copy updated content to the actual slapd DB config file.
+# NB: path is unknown at compile time during the first run.
+file "slapd_db_config_with_updated_acls" do
+  extend CAOpenldap
+  path lazy { slapd_db_config_file }
+  content lazy { File.read tmp_slapd_config }
+  notifies :restart, "service[slapd]"
 end

@@ -19,6 +19,7 @@ suites:
     run_list:
       - recipe[ca_openldap::server]
       - recipe[ca_openldap::schemas]
+      - recipe[ca_openldap::acl]
       - recipe[ca_openldap::dit]
       - recipe[ca_openldap::populate]
       - recipe[ca_openldap::ppolicy]
