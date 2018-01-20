@@ -146,16 +146,6 @@ ruby_block "db_backend_config" do
     password = LDAPUtils.ssha_password(node['ca_openldap']['rootpassword'])
     f.insert_line_after_match(/olcRootDN:/, "olcRootPW: #{password}")
     
-    #configure acl
-    f.search_file_delete_line(/olcAccess:/)
-    index = 0
-    acls = node['ca_openldap']['acls'].inject("") do |acum, acl|
-      acum << "olcAccess: {#{index}}#{acl}\n"
-      index+= 1
-      acum
-    end
-    f.insert_line_after_match(/olcRootPW:/, acls)
-
     f.write_file
 
     # Erase DB conf file using the temporary file prepared,

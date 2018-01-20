@@ -40,7 +40,6 @@ Debian and Ubuntu are planned but currently not supported.
 * `node['ca_openldap']['rootpassword']` - Root Password, it is strongly recommended to modify the default value (default: `"pa$$word"`) 
 * `node['ca_openldap']['slapd_sysconfig_file']` - Default location of the sysconfig file configuring LDAP daemon (default: `"/etc/sysconfig/ldap"`)
 * `node['ca_openldap']['ldap_log_level']` - Log level - see [Slapd config] (http://www.openldap.org/doc/admin24/slapdconfig.html) for explanation of supported values (default: `"-1"`)
-* `node['ca_openldap']['acls']` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
 * `node['ca_openldap']['default_ports']['ldap']` - Port of the 'clear' LDAP socket, used only when ca\_openldap.tls.enable is to `:no` or `:yes`
 * `node['ca_openldap']['defaut_ports']['ldaps']` - Port of the TLS socket, used only when ca\_openldap.tls.enable is set to `:yes` or `:exclusive`
 * `node['ca_openldap']['enable_ldapi'] - Enable LDAPI access (default `true`).
@@ -57,6 +56,9 @@ Debian and Ubuntu are planned but currently not supported.
     * `node['ca_openldap']['tls']['cert_file']`: points to the Server certificate (/etc/pki/tls/certs/\<fqdn\>.pem for RHEL).
     * `node['ca_openldap']['tls']['cacert_path'] + "/" + cacert_hash + ".0"`: points to the CA certificate chain (/etc/pki/tls/certs/\<_hostname_\>-bundle.crt for RHEL), cacert_hash is the X509 hash of the CA certificate file.
 Additionally the key file (/etc/pki/tls/private/\<_fqdn_\>.key) is copied to `node['ca_openldap']['tls']['key_file']`.
+
+### ACL attributes
+* `node.ca_openldap.acls` - ACLs, this is a ruby Array of the ACL to create, each line must comply with the OpenLDAP ACL syntax (default allows to read any attributes (except password) from any authenticated users and to write any attributes that belongs to the current user)
 
 ### PPolicy attributes
 * `node['ca_openldap']['ppolicy_default_config_dn']` - DN where the default ppolicy configuration is stored, relatively to the `node['ca_openldap']['basedn']` (default: `"cn=passwordDefault,ou=policies"`).
@@ -93,13 +95,17 @@ This recipe performs the following actions:
 * enable if requested the TLS support (see dedicated section below)
 * set the base directory for the database backend files
 * set the slapd log level
-* configure ACLs 
+
+### acl
+
+Configure Access Control List for a given server. Uses `node.ca_openldap.acls` as a list of ACLs to add.
 
 ### client
 
 Install the OpenLDAP client packages and configure access to an OpenLDAP Server.
 
 This recipe depends on the common attributes and the `node['ca_openldap']['use_existing_certs_and_key']` and `node['ca_openldap']['tls']['cacert_path']`attributes.
+
 
 ### dit
 
